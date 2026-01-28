@@ -1,35 +1,29 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import AdminLayout from "./components/layouts/AdminLayout";
 
-function App() {
-  const [count, setCount] = useState(0)
+import DashboardPage from "./pages/admin/DashboardPage";
+import ArticlesPage from "./pages/admin/articles";
+import CreateArticlePage from "./pages/admin/articles/create";
+import EditArticlePage from "./pages/admin/articles/edit";
 
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <BrowserRouter>
+      <Routes>
+        {/* optional: biar / langsung ke admin */}
+        <Route path="/" element={<Navigate to="/admin" replace />} />
 
-export default App
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<DashboardPage />} />
+
+          <Route path="articles" element={<ArticlesPage />} />
+          <Route path="articles/create" element={<CreateArticlePage />} />
+          <Route path="articles/edit/:id" element={<EditArticlePage />} />
+        </Route>
+
+        {/* fallback biar gak blank kalau route salah */}
+        <Route path="*" element={<div style={{ padding: 24 }}>404 Not Found</div>} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
