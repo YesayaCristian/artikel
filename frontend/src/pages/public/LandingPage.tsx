@@ -7,15 +7,30 @@ import { listPublishedArticles } from "../../data/publicArticles";
 export default function LandingPage() {
   const [loading, setLoading] = useState(true);
   const [articles, setArticles] = useState<Article[]>([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setLoading(true);
-    const t = window.setTimeout(() => {
-      const all = listPublishedArticles();
-      setArticles(all.slice(0, 6)); // latest 6
-      setLoading(false);
-    }, 350);
-    return () => window.clearTimeout(t);
+    let alive = true;
+
+    (async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const all = await listPublishedArticles();
+        if (!alive) return;
+
+        setArticles(all.slice(0, 6)); // latest 6 (backend sudah order -created_at)
+      } catch (e: any) {
+        if (alive) setError(e?.message ?? "Gagal fetch articles");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
   }, []);
 
   return (
@@ -34,6 +49,12 @@ export default function LandingPage() {
           <h2 className="text-2xl font-bold text-black-900 mb-6">
             Latest Articles
           </h2>
+
+          {error ? (
+            <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              {error}
+            </div>
+          ) : null}
 
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

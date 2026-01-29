@@ -1,17 +1,64 @@
 import PublicLayout from "../../components/layouts/public/PublicLayout";
 import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import type { Article } from "../../data/articles.mock";
 import { getPublishedArticleById } from "../../data/publicArticles";
 
 export default function ArticleDetailPage() {
   const { id } = useParams();
   const articleId = Number(id);
-  const article = Number.isFinite(articleId) ? getPublishedArticleById(articleId) : null;
 
-  if (!article) {
+  const [loading, setLoading] = useState(true);
+  const [article, setArticle] = useState<Article | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!Number.isFinite(articleId)) {
+      setLoading(false);
+      setArticle(null);
+      return;
+    }
+
+    let alive = true;
+
+    (async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const data = await getPublishedArticleById(articleId);
+        if (!alive) return;
+        setArticle(data);
+      } catch (e: any) {
+        if (alive) setError(e?.message ?? "Gagal memuat artikel");
+        if (alive) setArticle(null);
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, [articleId]);
+
+  if (loading) {
+    return (
+      <PublicLayout>
+        <div className="max-w-2xl mx-auto px-4 py-16 text-center text-gray-600">
+          Loading...
+        </div>
+      </PublicLayout>
+    );
+  }
+
+  if (!article || error) {
     return (
       <PublicLayout>
         <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-          <h2 className="text-xl font-bold text-blue-900 mb-4">Article not found</h2>
+          <h2 className="text-xl font-bold text-blue-900 mb-4">
+            {error ? "Gagal memuat artikel" : "Article not found"}
+          </h2>
+          {error ? <p className="text-sm text-red-700 mb-4">{error}</p> : null}
           <Link to="/articles" className="text-blue-600 hover:text-blue-800">
             ← Back to articles
           </Link>
@@ -30,7 +77,11 @@ export default function ArticleDetailPage() {
         {article.thumbnailUrl ? (
           <div className="mb-6 overflow-hidden rounded-xl border border-blue-100 bg-gray-100">
             <div className="aspect-[16/9] w-full">
-              <img src={article.thumbnailUrl} alt={article.title} className="w-full h-full object-cover" />
+              <img
+                src={article.thumbnailUrl}
+                alt={article.title}
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         ) : null}
@@ -38,7 +89,7 @@ export default function ArticleDetailPage() {
         <div className="mb-6">
           <div className="flex items-center gap-4 mb-4">
             <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
-              {article.category}
+              {article.category || "Uncategorized"}
             </span>
             <span className="text-gray-500 text-sm">
               {new Date(article.updatedAt).toLocaleDateString()}

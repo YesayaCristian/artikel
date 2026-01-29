@@ -7,6 +7,7 @@ import { listPublishedArticles } from "../../data/publicArticles";
 export default function ArticlesPage() {
   const [loading, setLoading] = useState(true);
   const [articles, setArticles] = useState<Article[]>([]);
+  const [error, setError] = useState("");
 
   // search
   const [q, setQ] = useState("");
@@ -16,12 +17,25 @@ export default function ArticlesPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   useEffect(() => {
-    setLoading(true);
-    const t = window.setTimeout(() => {
-      setArticles(listPublishedArticles());
-      setLoading(false);
-    }, 450);
-    return () => window.clearTimeout(t);
+    let alive = true;
+
+    (async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const data = await listPublishedArticles();
+        if (!alive) return;
+        setArticles(data);
+      } catch (e: any) {
+        if (alive) setError(e?.message ?? "Gagal fetch articles");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
   }, []);
 
   // build options from data (always sync)
@@ -89,6 +103,12 @@ export default function ArticlesPage() {
           <h1 className="text-3xl font-bold text-black-900 mb-2">All Articles</h1>
           <p className="text-black-600">Browse our complete collection</p>
         </div>
+
+        {error ? (
+          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        ) : null}
 
         {/* Search */}
         <div className="mb-4 flex items-center gap-2 rounded-xl border bg-white px-3 py-2">

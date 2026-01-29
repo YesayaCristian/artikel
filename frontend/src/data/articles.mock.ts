@@ -6,12 +6,7 @@ export type Article = {
   slug: string;
   excerpt: string;
   content: string;
-  status: ArticleStatus;
-
-  // ✅ image thumbnail (optional)
-  thumbnailUrl?: string;
-
-  // ✅ category + tags
+  thumbnailUrl?: string | null;
   category: string;
   tags: string[];
 
@@ -25,7 +20,6 @@ export const initialArticles: Article[] = [
     slug: "contoh-artikel-pertama",
     excerpt: "Ini ringkasan artikel pertama.",
     content: "Isi artikel pertama...",
-    status: "published",
     thumbnailUrl: "https://picsum.photos/seed/artikel1/800/450",
     category: "Teknologi",
     tags: ["react", "admin"],
@@ -37,7 +31,6 @@ export const initialArticles: Article[] = [
     slug: "draft-artikel",
     excerpt: "Ini artikel masih draft.",
     content: "Isi draft...",
-    status: "draft",
     thumbnailUrl: "https://picsum.photos/seed/artikel2/800/450",
     category: "Tutorial",
     tags: ["draft", "tips"],
