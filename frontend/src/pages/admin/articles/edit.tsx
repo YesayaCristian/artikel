@@ -3,10 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import ArticleForm from "../../../components/articles/ArticleForm";
 import type { Article } from "../../../data/articles.mock";
 import { getArticleById, updateArticle } from "../../../data/articles.store";
+import { useToast } from "../../../components/ui/toast/ToastProvider";
 
 export default function EditArticlePage() {
   const nav = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const { toast } = useToast();
 
   const articleId = Number(id);
 
@@ -19,7 +21,10 @@ export default function EditArticlePage() {
     return (
       <div className="bg-white border rounded-xl p-6">
         <h1 className="text-xl font-semibold mb-2">Invalid ID</h1>
-        <button className="px-4 py-2 rounded-lg border" onClick={() => nav("/admin/articles")}>
+        <button
+          className="px-4 py-2 rounded-lg border"
+          onClick={() => nav("/admin/articles")}
+        >
           Back
         </button>
       </div>
@@ -31,7 +36,10 @@ export default function EditArticlePage() {
       <div className="bg-white border rounded-xl p-6">
         <h1 className="text-xl font-semibold mb-2">Artikel tidak ditemukan</h1>
         <p className="text-gray-600 mb-4">Mungkin sudah dihapus atau ID salah.</p>
-        <button className="px-4 py-2 rounded-lg border" onClick={() => nav("/admin/articles")}>
+        <button
+          className="px-4 py-2 rounded-lg border"
+          onClick={() => nav("/admin/articles")}
+        >
           Back to Articles
         </button>
       </div>
@@ -49,12 +57,26 @@ export default function EditArticlePage() {
         initial={article}
         onCancel={() => nav("/admin/articles")}
         onSubmit={(values) => {
-          updateArticle(article.id, {
+          const ok = updateArticle(article.id, {
             ...article,
             ...values,
             updatedAt: new Date().toISOString(),
           });
-          nav("/admin/articles");
+
+          if (ok) {
+            toast({
+              type: "success",
+              title: "Updated",
+              message: "Artikel berhasil diupdate.",
+            });
+            nav("/admin/articles");
+          } else {
+            toast({
+              type: "error",
+              title: "Failed",
+              message: "Gagal update. Artikel tidak ditemukan.",
+            });
+          }
         }}
       />
     </div>

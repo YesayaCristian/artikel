@@ -1,63 +1,80 @@
 import type { Article } from "./articles.mock";
 import { initialArticles } from "./articles.mock";
+import { ensureTagsExist } from "./tags.store";
 
-const KEY = "articles_db_v1";
+const KEY = "ARTICLES_V1";
 
-export function loadArticles(): Article[] {
-  const raw = localStorage.getItem(KEY);
-  if (raw) {
-    try {
-      return JSON.parse(raw) as Article[];
-    } catch {}
+function load(): Article[] {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return initialArticles;
+    const parsed = JSON.parse(raw) as Article[];
+    return Array.isArray(parsed) ? parsed : initialArticles;
+  } catch {
+    return initialArticles;
   }
-  localStorage.setItem(KEY, JSON.stringify(initialArticles));
-  return initialArticles;
 }
 
-export function saveArticles(articles: Article[]) {
-  localStorage.setItem(KEY, JSON.stringify(articles));
+function save(items: Article[]) {
+  localStorage.setItem(KEY, JSON.stringify(items));
 }
 
 export function listArticles(): Article[] {
-  return loadArticles();
+  return load().sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
 }
 
 export function getArticleById(id: number): Article | null {
-  const articles = loadArticles();
-  return articles.find((a) => a.id === id) ?? null;
+  return load().find((a) => a.id === id) ?? null;
 }
 
-export function createArticle(payload: Omit<Article, "id" | "updatedAt">): Article {
-  const articles = loadArticles();
-  const nextId = articles.length ? Math.max(...articles.map((a) => a.id)) + 1 : 1;
+export function createArticle(values: Omit<Article, "id" | "updatedAt">) {
+  const items = load();
+  const now = new Date().toISOString();
+  const nextId = items.length ? Math.max(...items.map((x) => x.id)) + 1 : 1;
 
-  const created: Article = {
+  const newArticle: Article = {
     id: nextId,
-    updatedAt: new Date().toISOString(),
-    ...payload,
+    ...values,
+    category: values.category ?? "Teknologi",
+    tags: values.tags ?? [],
+    thumbnailUrl: values.thumbnailUrl?.trim() || undefined,
+    updatedAt: now,
   };
 
-  saveArticles([created, ...articles]);
-  return created;
+  // ✅ auto sync tags
+  ensureTagsExist(newArticle.tags ?? []);
+
+  save([newArticle, ...items]);
+  return newArticle;
 }
 
-export function updateArticle(id: number, payload: Omit<Article, "id">): Article | null {
-  const articles = loadArticles();
-  const idx = articles.findIndex((a) => a.id === id);
-  if (idx === -1) return null;
+export function updateArticle(id: number, values: Article) {
+  const items = load();
+  const idx = items.findIndex((a) => a.id === id);
+  if (idx === -1) return false;
 
-  const updated: Article = { ...payload, id };
-  const next = [...articles];
+  const updated: Article = {
+    ...values,
+    id,
+    category: values.category ?? "Teknologi",
+    tags: values.tags ?? [],
+    thumbnailUrl: values.thumbnailUrl?.trim() || undefined,
+    updatedAt: new Date().toISOString(),
+  };
+
+  // ✅ auto sync tags
+  ensureTagsExist(updated.tags ?? []);
+
+  const next = [...items];
   next[idx] = updated;
-
-  saveArticles(next);
-  return updated;
+  save(next);
+  return true;
 }
 
-export function deleteArticle(id: number): boolean {
-  const articles = loadArticles();
-  const next = articles.filter((a) => a.id !== id);
-  if (next.length === articles.length) return false;
-  saveArticles(next);
+export function deleteArticle(id: number) {
+  const items = load();
+  const next = items.filter((a) => a.id !== id);
+  if (next.length === items.length) return false;
+  save(next);
   return true;
 }

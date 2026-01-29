@@ -7,7 +7,14 @@ export type Article = {
   excerpt: string;
   content: string;
   status: ArticleStatus;
-  thumbnailUrl?: string; 
+
+  // ✅ image thumbnail (optional)
+  thumbnailUrl?: string;
+
+  // ✅ category + tags
+  category: string;
+  tags: string[];
+
   updatedAt: string;
 };
 
@@ -19,6 +26,9 @@ export const initialArticles: Article[] = [
     excerpt: "Ini ringkasan artikel pertama.",
     content: "Isi artikel pertama...",
     status: "published",
+    thumbnailUrl: "https://picsum.photos/seed/artikel1/800/450",
+    category: "Teknologi",
+    tags: ["react", "admin"],
     updatedAt: new Date().toISOString(),
   },
   {
@@ -28,6 +38,9 @@ export const initialArticles: Article[] = [
     excerpt: "Ini artikel masih draft.",
     content: "Isi draft...",
     status: "draft",
+    thumbnailUrl: "https://picsum.photos/seed/artikel2/800/450",
+    category: "Tutorial",
+    tags: ["draft", "tips"],
     updatedAt: new Date().toISOString(),
   },
 ];
