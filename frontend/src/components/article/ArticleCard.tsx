@@ -27,12 +27,12 @@ export default function ArticleCard({ article }: Props) {
             </span>
           </div>
           
-          <h3 className="text-lg font-bold text-blue-900 mb-3 line-clamp-2">
+          <h3 className="text-lg font-bold text-black-900 mb-3 line-clamp-2">
             {article.title}
           </h3>
           
           <div className="mb-4">
-            <div className="flex items-center gap-2 text-blue-600 text-sm">
+            <div className="flex items-center gap-2 text-black-200 text-sm">
               <span>{article.author}</span>
               <span>•</span>
               <span>{article.date}</span>

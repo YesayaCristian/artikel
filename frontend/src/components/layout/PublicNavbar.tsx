@@ -5,7 +5,7 @@ export default function PublicNavbar() {
     <nav className="bg-white shadow-md border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="font-bold text-xl text-blue-900">My Article Web</div>
+          <div className="font-bold text-xl text-blue-900">Article Web</div>
           <div className="flex gap-6">
             <NavLink 
               to="/" 
