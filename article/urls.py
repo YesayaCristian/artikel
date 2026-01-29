@@ -1,11 +1,5 @@
 from django.urls import path
-from .views import (
-    create_article,
-    list_article,
-    detail_article,
-    update_article,
-    delete_article,
-)
+from .views import create_article, list_article, detail_article, update_article, delete_article
 
 urlpatterns = [
     path("api/article/create/", create_article),

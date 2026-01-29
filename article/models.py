@@ -1,8 +1,14 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Article(models.Model):
     judul = models.CharField(max_length=200)
     konten = models.TextField()
+    author = models.ForeignKey(
+        User, 
+        related_name="articles", 
+        on_delete=models.CASCADE
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
