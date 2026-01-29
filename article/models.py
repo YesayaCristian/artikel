@@ -8,6 +8,7 @@ class Article(models.Model):
     def __str__(self):
         return self.judul
 
+
 class ArticleImage(models.Model):
     article = models.ForeignKey(
         Article,
@@ -15,5 +16,3 @@ class ArticleImage(models.Model):
         on_delete=models.CASCADE
     )
     image = models.ImageField(upload_to="artikel/")
-
-        
