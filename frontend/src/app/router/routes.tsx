@@ -6,6 +6,7 @@ import DashboardPage from "../../pages/admin/DashboardPage";
 import ArticlesAdminPage from "../../pages/admin/ArticleAdminPage";
 import CategoriesAdminPage from "../../pages/admin/CategoriesAdminPage";
 import TagsAdminPage from "../../pages/admin/TagsAdminPage";
+import LoginPage from "../../pages/public/LoginAdminPage";
 
 export default function RoutesApp() {
   return (
@@ -18,6 +19,7 @@ export default function RoutesApp() {
       <Route path="/admin/articles" element={<ArticlesAdminPage />} />
       <Route path="/admin/categories" element={<CategoriesAdminPage />} />
       <Route path="/admin/tags" element={<TagsAdminPage />} />
+      <Route path="/admin/login" element={<LoginPage />} />
 
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
