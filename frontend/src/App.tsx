@@ -1,34 +1,46 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import AdminLayout from "./components/layouts/admin/AdminLayout";
+import ProtectedRoutes from "./routes/ProtectedRoutes";
 
-import DashboardPage from "./pages/admin/DashboardPage";
-import AdminArticlesPage from "./pages/admin/articles";
-import CreateArticlePage from "./pages/admin/articles/create";
-import EditArticlePage from "./pages/admin/articles/edit";
-
-import CategoriesPage from "./pages/admin/categories";
-import TagsPage from "./pages/admin/tags";
-
+// public
 import LandingPage from "./pages/public/LandingPage";
 import ArticlesPage from "./pages/public/ArticlePage";
 import ArticleDetailPage from "./pages/public/ArticleDetailPage";
-import LoginPage from "./pages/admin/LoginAdminPage";
+
+// admin
+import AdminLayout from "./components/layouts/admin/AdminLayout";
+import AdminLoginPage from "./pages/admin/Login";
+import DashboardPage from "./pages/admin/Dashboard";
+import AdminArticlesPage from "./pages/admin/articles";
+import CreateArticlePage from "./pages/admin/articles/create";
+import EditArticlePage from "./pages/admin/articles/edit";
+import CategoriesPage from "./pages/admin/categories";
+import TagsPage from "./pages/admin/tags";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* PUBLIC ROUTES */}
+        {/* ========== PUBLIC ========== */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/articles" element={<ArticlesPage />} />
         <Route path="/articles/:id" element={<ArticleDetailPage />} />
 
-        {/* ADMIN LOGIN (di luar layout admin) */}
-        <Route path="/admin/login" element={<LoginPage />} />
+        {/* ========== ADMIN LOGIN (PUBLIC ACCESS) ========== */}
+        <Route path="/admin/login" element={<AdminLoginPage />} />
 
-        {/* ADMIN ROUTES */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<DashboardPage />} />
+        {/* ========== ADMIN AREA (PROTECTED) ========== */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoutes>
+              <AdminLayout />
+            </ProtectedRoutes>
+          }
+        >
+          {/* /admin -> /admin/dashboard */}
+          <Route index element={<Navigate to="dashboard" replace />} />
+
+          <Route path="dashboard" element={<DashboardPage />} />
 
           <Route path="articles" element={<AdminArticlesPage />} />
           <Route path="articles/create" element={<CreateArticlePage />} />
@@ -37,12 +49,12 @@ export default function App() {
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="tags" element={<TagsPage />} />
 
-          {/* fallback untuk /admin/... */}
-          <Route path="*" element={<Navigate to="/admin" replace />} />
+          {/* unknown admin path -> balik dashboard */}
+          <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Route>
 
         {/* fallback global */}
-        <Route path="*" element={<div style={{ padding: 24 }}>404 Not Found</div>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
