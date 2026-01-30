@@ -1,80 +1,83 @@
-import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "./auth";
+const BASE = (import.meta.env.VITE_API_BASE_URL as string).replace(/\/+$/, "");
 
-const BASE = import.meta.env.VITE_API_BASE_URL as string;
+function getAccessToken() {
+  return localStorage.getItem("access_token");
+}
+function getRefreshToken() {
+  return localStorage.getItem("refresh_token");
+}
+function setAccessToken(token: string) {
+  localStorage.setItem("access_token", token);
+}
+function clearTokens() {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+}
 
-async function refreshAccessToken() {
+function buildUrl(path: string) {
+  // kamu sudah passing "/api/...."
+  if (!path.startsWith("/")) path = "/" + path;
+  return `${BASE}${path}`;
+}
+
+async function refreshAccessToken(): Promise<string | null> {
   const refresh = getRefreshToken();
-  if (!refresh) throw new Error("No refresh token");
+  if (!refresh) return null;
 
-  const res = await fetch(`${BASE}/api/users/refresh/`, {
+  const res = await fetch(buildUrl("/api/users/refresh/"), {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ refresh }),
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data?.detail || "Refresh gagal");
+  if (!res.ok || !data?.access) return null;
 
-  // SimpleJWT returns { access }
-  setTokens(data.access, refresh);
+  setAccessToken(data.access);
   return data.access as string;
 }
 
-export async function http<T>(path: string, opts: RequestInit = {}, retry = true): Promise<T> {
+/**
+ * http<T>(path, init?)
+ * - path: "/api/...."
+ * - otomatis attach Bearer token
+ * - kalau 401: coba refresh 1x
+ */
+export async function http<T>(path: string, init: RequestInit = {}, retry = true): Promise<T> {
   const token = getAccessToken();
 
-  const res = await fetch(`${BASE}${path}`, {
-    ...opts,
-    headers: {
-      Accept: "application/json",
-      ...(opts.headers || {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    ...(init.headers as any),
+  };
 
-  // 401 -> coba refresh sekali
-  if (res.status === 401 && retry) {
-    try {
-      await refreshAccessToken();
-      return http<T>(path, opts, false);
-    } catch {
-      clearTokens();
-      throw new Error("Session habis. Silakan login lagi.");
-    }
+  const isFormData = init.body instanceof FormData;
+  if (!isFormData && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
   }
 
-  const text = await res.text();
-  const data = text ? JSON.parse(text) : null;
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const res = await fetch(buildUrl(path), {
+    ...init,
+    headers,
+  });
+
+  // kalau access expired -> refresh 1x
+  if (res.status === 401 && retry) {
+    const newAccess = await refreshAccessToken();
+    if (newAccess) return http<T>(path, init, false);
+
+    clearTokens();
+    throw new Error("Unauthorized");
+  }
+
+  const data = (await res.json().catch(() => ({}))) as any;
 
   if (!res.ok) {
-    throw new Error(data?.error || data?.detail || `${res.status} ${res.statusText}`);
+    // jangan clear token untuk 404/500
+    throw new Error(data?.detail || data?.error || `Request gagal (${res.status})`);
   }
 
   return data as T;
 }
-
-export async function httpForm<T>(path: string, form: FormData, method: "POST" | "PUT" | "PATCH" = "POST") {
-  const token = getAccessToken();
-
-  const res = await fetch(`${BASE}${path}`, {
-    method,
-    headers: {
-      Accept: "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: form,
-  });
-
-  if (res.status === 401) {
-    // refresh then retry once
-    await refreshAccessToken();
-    return httpForm<T>(path, form, method);
-  }
-
-  const text = await res.text();
-  const data = text ? JSON.parse(text) : null;
-
-  if (!res.ok) throw new Error(data?.error || data?.detail || `${res.status} ${res.statusText}`);
-  return data as T;
-}
-    

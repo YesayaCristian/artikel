@@ -41,7 +41,6 @@ export function createArticle(values: Omit<Article, "id" | "updatedAt">) {
     updatedAt: now,
   };
 
-  // ✅ auto sync tags
   ensureTagsExist(newArticle.tags ?? []);
 
   save([newArticle, ...items]);

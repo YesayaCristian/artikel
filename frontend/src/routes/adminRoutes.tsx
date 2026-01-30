@@ -1,0 +1,53 @@
+import type { RouteObject } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+
+import ProtectedRoutes from "./ProtectedRoutes";
+import AdminAuthGate from "./AuthGate";
+
+import AdminLayout from "../components/layouts/admin/AdminLayout";
+
+import AdminLoginPage from "../pages/admin/Login";
+import DashboardPage from "../pages/admin/Dashboard";
+import AdminArticlesPage from "../pages/admin/articles";
+import CreateArticlePage from "../pages/admin/articles/create";
+import EditArticlePage from "../pages/admin/articles/edit";
+import CategoriesPage from "../pages/admin/categories";
+import TagsPage from "../pages/admin/tags";
+
+const adminRoutes: RouteObject[] = [
+  {
+    path: "/admin/login",
+    element: (
+      <AdminAuthGate>
+        <AdminLoginPage />
+      </AdminAuthGate>
+    ),
+  },
+
+  // protected admin area
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoutes>
+        <AdminLayout />
+      </ProtectedRoutes>
+    ),
+    children: [
+      { index: true, element: <Navigate to="dashboard" replace /> },
+
+      { path: "dashboard", element: <DashboardPage /> },
+
+      { path: "articles", element: <AdminArticlesPage /> },
+      { path: "articles/create", element: <CreateArticlePage /> },
+      { path: "articles/edit/:id", element: <EditArticlePage /> },
+
+      { path: "categories", element: <CategoriesPage /> },
+      { path: "tags", element: <TagsPage /> },
+
+      // fallback admin
+      { path: "*", element: <Navigate to="dashboard" replace /> },
+    ],
+  },
+];
+
+export default adminRoutes;

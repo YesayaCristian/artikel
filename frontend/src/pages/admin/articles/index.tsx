@@ -1,259 +1,109 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import type { Article } from "../../../data/articles.mock";
-import { deleteArticle, listArticles } from "../../../data/articles.store";
-import ConfirmModal from "../../../components/common/ConfirmModal";
-import { Skeleton } from "../../../components/common/Skeleton";
-import { useToast } from "../../../components/ui/toast/ToastProvider";
+import { fetchAdminArticles, deleteArticle, type ApiArticle } from "../../../services/adminArticle";
 
-export default function ArticlesPage() {
-  const { toast } = useToast();
+export default function AdminArticlesPage() {
   const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState<ApiArticle[]>([]);
+  const [err, setErr] = useState("");
 
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [q, setQ] = useState("");
-
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [targetId, setTargetId] = useState<number | null>(null);
-
-  function refresh() {
-    setArticles(listArticles());
+  async function load() {
+    setErr("");
+    setLoading(true);
+    try {
+      const res = await fetchAdminArticles();
+      setItems(res.articles ?? []);
+    } catch (e: any) {
+      setErr(e?.message ?? "Gagal load articles");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
-    setLoading(true);
-    const t = window.setTimeout(() => {
-      refresh();
-      setLoading(false);
-    }, 450); // bikin "dynamic feel"
-    return () => window.clearTimeout(t);
+    load();
   }, []);
 
-  const filtered = useMemo(() => {
-    const query = q.toLowerCase().trim();
-    if (!query) return articles;
-    return articles.filter(
-      (a) =>
-        a.title.toLowerCase().includes(query) ||
-        a.slug.toLowerCase().includes(query)
-    );
-  }, [q, articles]);
+  async function onDelete(id: number) {
+    const ok = window.confirm("Hapus artikel ini?");
+    if (!ok) return;
 
-  function askDelete(id: number) {
-    setTargetId(id);
-    setConfirmOpen(true);
-  }
-
-  function doDelete() {
-    if (!targetId) return;
-    const ok = deleteArticle(targetId);
-    refresh();
-    toast({
-      type: ok ? "success" : "error",
-      title: ok ? "Deleted" : "Failed",
-      message: ok ? "Artikel berhasil dihapus." : "Artikel tidak ditemukan.",
-    });
-    setTargetId(null);
+    try {
+      await deleteArticle(id);
+      setItems((prev) => prev.filter((x) => x.id !== id));
+    } catch (e: any) {
+      alert(e?.message ?? "Gagal hapus");
+    }
   }
 
   return (
-    <div className="space-y-4">
-      <ConfirmModal
-        open={confirmOpen}
-        title="Hapus artikel?"
-        message="Artikel yang dihapus akan hilang dari list (sementara ini hard delete)."
-        confirmText="Delete"
-        cancelText="Cancel"
-        variant="danger"
-        onConfirm={doDelete}
-        onClose={() => setConfirmOpen(false)}
-      />
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Articles</h1>
+          <h1 className="text-2xl font-bold text-black">Articles</h1>
+          <p className="text-black/60">Manage your articles</p>
         </div>
 
         <Link
           to="/admin/articles/create"
-          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-soft hover:bg-primary-700"
+          className="px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700"
         >
-          <span>＋</span> New Article
+          + Create
         </Link>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex w-full items-center gap-2 rounded-2xl border bg-white px-3 py-2 shadow-sm">
-          <span className="text-slate-400">⌕</span>
-          <input
-            className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
-            placeholder="Search title / slug..."
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-          />
+      {err ? (
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {err}
         </div>
+      ) : null}
 
-        <button
-          className="rounded-2xl border bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-          onClick={() => {
-            setLoading(true);
-            window.setTimeout(() => {
-              refresh();
-              setLoading(false);
-              toast({ type: "info", title: "Refreshed", message: "Data diperbarui." });
-            }, 350);
-          }}
-        >
-          Refresh
-        </button>
-      </div>
-
-      {/* DESKTOP TABLE */}
-      <div className="hidden sm:block overflow-hidden rounded-3xl border bg-white">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-slate-600">
-            <tr>
-              <th className="text-left px-4 py-3 font-semibold">Title</th>
-              <th className="text-left px-4 py-3 font-semibold">Status</th>
-              <th className="text-left px-4 py-3 font-semibold">Updated</th>
-              <th className="text-left px-4 py-3 font-semibold w-[180px]">Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {loading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className="border-t">
-                  <td className="px-4 py-3">
-                    <Skeleton className="h-4 w-[70%]" />
-                    <Skeleton className="mt-2 h-3 w-[40%]" />
-                  </td>
-                  <td className="px-4 py-3">
-                    <Skeleton className="h-6 w-24 rounded-full" />
-                  </td>
-                  <td className="px-4 py-3">
-                    <Skeleton className="h-4 w-40" />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-3">
-                      <Skeleton className="h-4 w-10" />
-                      <Skeleton className="h-4 w-14" />
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : filtered.length === 0 ? (
+      {loading ? (
+        <div className="text-black/70">Loading...</div>
+      ) : items.length === 0 ? (
+        <div className="rounded-xl border bg-white p-6 text-black/70">Belum ada artikel.</div>
+      ) : (
+        <div className="rounded-xl border bg-white overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-blue-50 text-black">
               <tr>
-                <td className="px-4 py-6 text-slate-500" colSpan={4}>
-                  Tidak ada artikel.
-                </td>
+                <th className="text-left p-3">Judul</th>
+                <th className="text-left p-3">Category</th>
+                <th className="text-left p-3">Author</th>
+                <th className="text-left p-3">Created</th>
+                <th className="text-right p-3">Action</th>
               </tr>
-            ) : (
-              filtered.map((a) => (
-                <tr key={a.id} className="border-t hover:bg-slate-50/60 transition">
-                  <td className="px-4 py-3">
-                    <div className="font-semibold text-slate-900">{a.title}</div>
-                    <div className="text-xs text-slate-500">{a.slug}</div>
+            </thead>
+            <tbody>
+              {items.map((a) => (
+                <tr key={a.id} className="border-t">
+                  <td className="p-3 text-black font-semibold">{a.judul}</td>
+                  <td className="p-3 text-black/70">{a.category?.name ?? "Uncategorized"}</td>
+                  <td className="p-3 text-black/70">{a.author}</td>
+                  <td className="p-3 text-black/70">
+                    {new Date(a.created_at).toLocaleString()}
                   </td>
-
-                  <td className="px-4 py-3">
-                    {a.status === "published" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-200">
-                        ● Published
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
-                        ● Draft
-                      </span>
-                    )}
-                  </td>
-
-                  <td className="px-4 py-3 text-slate-600">
-                    {new Date(a.updatedAt).toLocaleString()}
-                  </td>
-
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <Link
-                        to={`/admin/articles/edit/${a.id}`}
-                        className="text-primary-700 font-semibold hover:underline"
-                      >
-                        Edit
-                      </Link>
-                      <button
-                        className="text-red-600 font-semibold hover:underline"
-                        onClick={() => askDelete(a.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
+                  <td className="p-3 text-right space-x-2">
+                    <Link
+                      to={`/admin/articles/edit/${a.id}`}
+                      className="px-3 py-1 rounded-lg border text-blue-700 hover:bg-blue-50"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => onDelete(a.id)}
+                      className="px-3 py-1 rounded-lg border text-red-700 hover:bg-red-50"
+                      type="button"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* MOBILE CARDS */}
-      <div className="space-y-3 sm:hidden">
-        {loading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-3xl border bg-white p-4 shadow-sm">
-              <Skeleton className="h-4 w-[70%]" />
-              <Skeleton className="mt-2 h-3 w-[45%]" />
-              <div className="mt-4 flex gap-2">
-                <Skeleton className="h-10 w-full rounded-2xl" />
-                <Skeleton className="h-10 w-full rounded-2xl" />
-              </div>
-            </div>
-          ))
-        ) : filtered.length === 0 ? (
-          <div className="rounded-3xl border bg-white p-4 text-slate-500">
-            Tidak ada artikel.
-          </div>
-        ) : (
-          filtered.map((a) => (
-            <div key={a.id} className="rounded-3xl border bg-white p-4 shadow-sm">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="font-semibold text-slate-900">{a.title}</div>
-                  <div className="text-xs text-slate-500 mt-1">{a.slug}</div>
-                </div>
-
-                {a.status === "published" ? (
-                  <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-200">
-                    Published
-                  </span>
-                ) : (
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
-                    Draft
-                  </span>
-                )}
-              </div>
-
-              <div className="mt-3 text-xs text-slate-500">
-                Updated: {new Date(a.updatedAt).toLocaleString()}
-              </div>
-
-              <div className="mt-4 flex gap-3">
-                <Link
-                  to={`/admin/articles/edit/${a.id}`}
-                  className="flex-1 rounded-2xl border px-4 py-2 text-sm font-semibold text-primary-700 hover:bg-primary-50 text-center"
-                >
-                  Edit
-                </Link>
-                <button
-                  onClick={() => askDelete(a.id)}
-                  className="flex-1 rounded-2xl border px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
