@@ -16,16 +16,6 @@ export default function DashboardPage() {
           <div className="mt-2 text-3xl font-bold">{total}</div>
           <div className="mt-2 text-xs opacity-90">Semua artikel</div>
         </div>
-
-        <div className="rounded-2xl border bg-white p-5 shadow-soft">
-          <div className="text-sm text-slate-500">Published</div>
-          <div className="mt-2 text-xs text-slate-500">Tampil di publik</div>
-        </div>
-
-        <div className="rounded-2xl border bg-white p-5 shadow-soft">
-          <div className="text-sm text-slate-500">Draft</div>
-          <div className="mt-2 text-xs text-slate-500">Belum dipublish</div>
-        </div>
       </div>
     </div>
   );

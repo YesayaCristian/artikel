@@ -44,7 +44,6 @@ export default function EditArticlePage() {
           slug: slugifyLite(a.judul),
           excerpt: makeExcerpt(a.konten),
           content: a.konten,
-          status: "published", // UI doang, backend kamu gak pakai
           categoryId: a.category?.id ?? null,
           tags: (a.tags ?? []).map((x) => x.name),
           thumbnailUrl: "",

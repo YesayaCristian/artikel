@@ -8,8 +8,6 @@ export type ArticleFormValues = {
   slug: string;
   excerpt: string;
   content: string;
-  status: ArticleStatus;
-
   thumbnailUrl?: string;      // DataURL preview (tetap dipakai UI)
   thumbnailFile?: File | null; // ✅ buat upload ke API
   categoryId: number | null;   // ✅ dari API (bukan nama string)
@@ -22,7 +20,6 @@ export type ArticleFormInitial = {
   slug: string;
   excerpt: string;
   content: string;
-  status?: ArticleStatus;
   thumbnailUrl?: string;
   categoryId?: number | null;
   tags?: string[];
@@ -49,7 +46,6 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
   const [slug, setSlug] = useState(initial?.slug ?? "");
   const [excerpt, setExcerpt] = useState(initial?.excerpt ?? "");
   const [content, setContent] = useState(initial?.content ?? "");
-  const [status, setStatus] = useState<ArticleStatus>(initial?.status ?? "draft");
 
   const [thumbnailUrl, setThumbnailUrl] = useState(initial?.thumbnailUrl ?? "");
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -122,7 +118,6 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
       slug,
       excerpt,
       content,
-      status,
       categoryId: categoryId ?? null,
       tags,
       thumbnailUrl: thumbnailUrl.trim() || undefined,
@@ -238,18 +233,6 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
             onChange={(e) => setContent(e.target.value)}
             placeholder="Isi artikel..."
           />
-        </div>
-
-        <div className="sm:col-span-1">
-          <label className={label}>Status</label>
-          <select
-            className={field}
-            value={status}
-            onChange={(e) => setStatus(e.target.value as ArticleStatus)}
-          >
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-          </select>
         </div>
 
         <div className="sm:col-span-1">
