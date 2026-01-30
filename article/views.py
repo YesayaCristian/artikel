@@ -3,6 +3,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
+from .models import Dosen
+
+from django.http import JsonResponse
+
 from .models import Article, ArticleImage
 from django.contrib.auth.models import User
 
@@ -129,3 +133,27 @@ def delete_article(request, id):
 
     article.delete()
     return Response({"message": "Artikel berhasil dihapus"}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_dosen(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Method not allowed"}, status=405)
+
+    try:
+        dosen = Dosen.objects.create(
+            nama_dosen=request.POST.get("nama_dosen"),
+            nidn=request.POST.get("nidn"),
+            fakultas=request.POST.get("fakultas"),
+            program_studi=request.POST.get("program_studi"),
+            penelitian=request.POST.get("penelitian") == "true",
+            foto_dosen=request.FILES.get("foto_dosen")
+        )
+
+        return JsonResponse({
+            "message": "Dosen berhasil ditambahkan",
+            "id": dosen.id
+        }, status=201)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
