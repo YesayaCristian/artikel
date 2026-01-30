@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useToast } from "../../../components/ui/toast/ToastProvider";
 import ConfirmModal from "../../../components/common/ConfirmModal";
-import {
-  listCategories,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-  type Category,
-} from "../../../data/categories.store";
 import { Skeleton } from "../../../components/common/Skeleton";
+import {
+  fetchCategories,
+  createCategoryApi,
+  updateCategoryApi,
+  deleteCategoryApi,
+  type Category,
+} from "../../../services/adminTaxonomy";
 
 export default function CategoriesPage() {
   const { toast } = useToast();
@@ -25,44 +25,54 @@ export default function CategoriesPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetId, setTargetId] = useState<number | null>(null);
 
-  function refresh() {
-    setCategories(listCategories());
+  async function refresh() {
+    try {
+      const res = await fetchCategories();
+      setCategories(res.categories ?? []);
+    } catch (e: any) {
+      toast({ type: "error", title: "Failed", message: e?.message ?? "Gagal load categories" });
+      setCategories([]);
+    }
   }
 
   useEffect(() => {
     setLoading(true);
-    const t = window.setTimeout(() => {
-      refresh();
+    const t = window.setTimeout(async () => {
+      await refresh();
       setLoading(false);
     }, 450);
     return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filtered = useMemo(() => {
     const query = q.toLowerCase().trim();
     if (!query) return categories;
     return categories.filter(
-      (c) =>
-        c.name.toLowerCase().includes(query) ||
-        c.slug.toLowerCase().includes(query)
+      (c) => c.name.toLowerCase().includes(query) || c.slug.toLowerCase().includes(query)
     );
   }, [q, categories]);
 
-  function add() {
-    const res = createCategory(name);
-    if (!res.ok) {
-      toast({ type: "error", title: "Failed", message: res.message });
+  async function add() {
+    const n = name.trim();
+    if (!n) {
+      toast({ type: "error", title: "Failed", message: "Nama category wajib diisi." });
       return;
     }
-    toast({ type: "success", title: "Created", message: "Category berhasil ditambah." });
-    setName("");
 
-    // ✅ efek loading kecil biar kerasa "save"
-    setLoading(true);
-    window.setTimeout(() => {
-      refresh();
-      setLoading(false);
-    }, 250);
+    try {
+      await createCategoryApi(n);
+      toast({ type: "success", title: "Created", message: "Category berhasil ditambah." });
+      setName("");
+
+      setLoading(true);
+      window.setTimeout(async () => {
+        await refresh();
+        setLoading(false);
+      }, 250);
+    } catch (e: any) {
+      toast({ type: "error", title: "Failed", message: e?.message ?? "Gagal tambah category" });
+    }
   }
 
   function startEdit(id: number, current: string) {
@@ -70,22 +80,29 @@ export default function CategoriesPage() {
     setEditName(current);
   }
 
-  function saveEdit() {
+  async function saveEdit() {
     if (!editId) return;
-    const res = updateCategory(editId, editName);
-    if (!res.ok) {
-      toast({ type: "error", title: "Failed", message: res.message });
+
+    const n = editName.trim();
+    if (!n) {
+      toast({ type: "error", title: "Failed", message: "Nama category wajib diisi." });
       return;
     }
-    toast({ type: "success", title: "Updated", message: "Category berhasil diupdate." });
-    setEditId(null);
-    setEditName("");
 
-    setLoading(true);
-    window.setTimeout(() => {
-      refresh();
-      setLoading(false);
-    }, 250);
+    try {
+      await updateCategoryApi(editId, n);
+      toast({ type: "success", title: "Updated", message: "Category berhasil diupdate." });
+      setEditId(null);
+      setEditName("");
+
+      setLoading(true);
+      window.setTimeout(async () => {
+        await refresh();
+        setLoading(false);
+      }, 250);
+    } catch (e: any) {
+      toast({ type: "error", title: "Failed", message: e?.message ?? "Gagal update category" });
+    }
   }
 
   function askDelete(id: number) {
@@ -93,19 +110,23 @@ export default function CategoriesPage() {
     setConfirmOpen(true);
   }
 
-  function doDelete() {
+  async function doDelete() {
     if (!targetId) return;
-    const res = deleteCategory(targetId);
-    if (!res.ok) toast({ type: "error", title: "Failed", message: res.message });
-    else toast({ type: "success", title: "Deleted", message: "Category dihapus." });
 
-    setTargetId(null);
+    try {
+      await deleteCategoryApi(targetId);
+      toast({ type: "success", title: "Deleted", message: "Category dihapus." });
+    } catch (e: any) {
+      toast({ type: "error", title: "Failed", message: e?.message ?? "Gagal hapus category" });
+    } finally {
+      setTargetId(null);
 
-    setLoading(true);
-    window.setTimeout(() => {
-      refresh();
-      setLoading(false);
-    }, 250);
+      setLoading(true);
+      window.setTimeout(async () => {
+        await refresh();
+        setLoading(false);
+      }, 250);
+    }
   }
 
   return (
@@ -131,8 +152,8 @@ export default function CategoriesPage() {
           className="rounded-2xl border bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
           onClick={() => {
             setLoading(true);
-            window.setTimeout(() => {
-              refresh();
+            window.setTimeout(async () => {
+              await refresh();
               setLoading(false);
               toast({ type: "info", title: "Refreshed", message: "Data diperbarui." });
             }, 350);
@@ -221,7 +242,10 @@ export default function CategoriesPage() {
                   <td className="px-4 py-3">
                     {editId === c.id ? (
                       <div className="flex gap-3">
-                        <button className="text-primary-700 font-semibold hover:underline" onClick={saveEdit}>
+                        <button
+                          className="text-primary-700 font-semibold hover:underline"
+                          onClick={saveEdit}
+                        >
                           Save
                         </button>
                         <button
@@ -236,10 +260,16 @@ export default function CategoriesPage() {
                       </div>
                     ) : (
                       <div className="flex gap-3">
-                        <button className="text-primary-700 font-semibold hover:underline" onClick={() => startEdit(c.id, c.name)}>
+                        <button
+                          className="text-primary-700 font-semibold hover:underline"
+                          onClick={() => startEdit(c.id, c.name)}
+                        >
                           Edit
                         </button>
-                        <button className="text-red-600 font-semibold hover:underline" onClick={() => askDelete(c.id)}>
+                        <button
+                          className="text-red-600 font-semibold hover:underline"
+                          onClick={() => askDelete(c.id)}
+                        >
                           Delete
                         </button>
                       </div>

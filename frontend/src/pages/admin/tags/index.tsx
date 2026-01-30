@@ -3,13 +3,13 @@ import { useToast } from "../../../components/ui/toast/ToastProvider";
 import ConfirmModal from "../../../components/common/ConfirmModal";
 import { Skeleton } from "../../../components/common/Skeleton";
 import {
-  listTags,
-  createTag,
-  updateTag,
-  deleteTag,
+  fetchTags,
+  createTagApi,
+  updateTagApi,
+  deleteTagApi,
   type Tag,
-} from "../../../data/tags.store";
-
+} from "../../../services/adminTaxonomy";
+  
 export default function TagsPage() {
   const { toast } = useToast();
 
@@ -25,14 +25,20 @@ export default function TagsPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetId, setTargetId] = useState<number | null>(null);
 
-  function refresh() {
-    setTags(listTags());
+  async function refresh() {
+    try {
+      const res = await fetchTags();
+      setTags(res.tags ?? []);
+    } catch (e: any) {
+      toast({ type: "error", title: "Failed", message: e?.message ?? "Gagal load tags" });
+      setTags([]);
+    }
   }
 
   useEffect(() => {
     setLoading(true);
-    const t = window.setTimeout(() => {
-      refresh();
+    const t = window.setTimeout(async () => {
+      await refresh();
       setLoading(false);
     }, 450);
     return () => window.clearTimeout(t);
@@ -42,27 +48,30 @@ export default function TagsPage() {
     const query = q.toLowerCase().trim();
     if (!query) return tags;
     return tags.filter(
-      (t) =>
-        t.name.toLowerCase().includes(query) ||
-        t.slug.toLowerCase().includes(query)
+      (t) => t.name.toLowerCase().includes(query) || t.slug.toLowerCase().includes(query)
     );
   }, [q, tags]);
 
-  function add() {
-    const res = createTag(name);
-    if (!res.ok) {
-      toast({ type: "error", title: "Failed", message: res.message });
+  async function add() {
+    const n = name.trim();
+    if (!n) {
+      toast({ type: "error", title: "Failed", message: "Nama tag wajib diisi." });
       return;
     }
 
-    toast({ type: "success", title: "Created", message: "Tag berhasil ditambah." });
-    setName("");
+    try {
+      await createTagApi(n);
+      toast({ type: "success", title: "Created", message: "Tag berhasil ditambah." });
+      setName("");
 
-    setLoading(true);
-    window.setTimeout(() => {
-      refresh();
-      setLoading(false);
-    }, 250);
+      setLoading(true);
+      window.setTimeout(async () => {
+        await refresh();
+        setLoading(false);
+      }, 250);
+    } catch (e: any) {
+      toast({ type: "error", title: "Failed", message: e?.message ?? "Gagal tambah tag" });
+    }
   }
 
   function startEdit(id: number, current: string) {
@@ -70,24 +79,29 @@ export default function TagsPage() {
     setEditName(current);
   }
 
-  function saveEdit() {
+  async function saveEdit() {
     if (!editId) return;
 
-    const res = updateTag(editId, editName);
-    if (!res.ok) {
-      toast({ type: "error", title: "Failed", message: res.message });
+    const n = editName.trim();
+    if (!n) {
+      toast({ type: "error", title: "Failed", message: "Nama tag wajib diisi." });
       return;
     }
 
-    toast({ type: "success", title: "Updated", message: "Tag berhasil diupdate." });
-    setEditId(null);
-    setEditName("");
+    try {
+      await updateTagApi(editId, n);
+      toast({ type: "success", title: "Updated", message: "Tag berhasil diupdate." });
+      setEditId(null);
+      setEditName("");
 
-    setLoading(true);
-    window.setTimeout(() => {
-      refresh();
-      setLoading(false);
-    }, 250);
+      setLoading(true);
+      window.setTimeout(async () => {
+        await refresh();
+        setLoading(false);
+      }, 250);
+    } catch (e: any) {
+      toast({ type: "error", title: "Failed", message: e?.message ?? "Gagal update tag" });
+    }
   }
 
   function askDelete(id: number) {
@@ -95,20 +109,23 @@ export default function TagsPage() {
     setConfirmOpen(true);
   }
 
-  function doDelete() {
+  async function doDelete() {
     if (!targetId) return;
 
-    const res = deleteTag(targetId);
-    if (!res.ok) toast({ type: "error", title: "Failed", message: res.message });
-    else toast({ type: "success", title: "Deleted", message: "Tag dihapus." });
+    try {
+      await deleteTagApi(targetId);
+      toast({ type: "success", title: "Deleted", message: "Tag dihapus." });
+    } catch (e: any) {
+      toast({ type: "error", title: "Failed", message: e?.message ?? "Gagal hapus tag" });
+    } finally {
+      setTargetId(null);
 
-    setTargetId(null);
-
-    setLoading(true);
-    window.setTimeout(() => {
-      refresh();
-      setLoading(false);
-    }, 250);
+      setLoading(true);
+      window.setTimeout(async () => {
+        await refresh();
+        setLoading(false);
+      }, 250);
+    }
   }
 
   return (
@@ -133,8 +150,8 @@ export default function TagsPage() {
           className="rounded-2xl border bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
           onClick={() => {
             setLoading(true);
-            window.setTimeout(() => {
-              refresh();
+            window.setTimeout(async () => {
+              await refresh();
               setLoading(false);
               toast({ type: "info", title: "Refreshed", message: "Data diperbarui." });
             }, 350);
@@ -223,10 +240,7 @@ export default function TagsPage() {
                   <td className="px-4 py-3">
                     {editId === t.id ? (
                       <div className="flex gap-3">
-                        <button
-                          className="text-primary-700 font-semibold hover:underline"
-                          onClick={saveEdit}
-                        >
+                        <button className="text-primary-700 font-semibold hover:underline" onClick={saveEdit}>
                           Save
                         </button>
                         <button
@@ -241,16 +255,10 @@ export default function TagsPage() {
                       </div>
                     ) : (
                       <div className="flex gap-3">
-                        <button
-                          className="text-primary-700 font-semibold hover:underline"
-                          onClick={() => startEdit(t.id, t.name)}
-                        >
+                        <button className="text-primary-700 font-semibold hover:underline" onClick={() => startEdit(t.id, t.name)}>
                           Edit
                         </button>
-                        <button
-                          className="text-red-600 font-semibold hover:underline"
-                          onClick={() => askDelete(t.id)}
-                        >
+                        <button className="text-red-600 font-semibold hover:underline" onClick={() => askDelete(t.id)}>
                           Delete
                         </button>
                       </div>
