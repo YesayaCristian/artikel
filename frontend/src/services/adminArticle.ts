@@ -18,8 +18,12 @@ export async function fetchAdminArticles() {
   return http<{ articles: ApiArticle[] }>("/api/articles/");
 }
 
-export async function fetchAdminArticle(id: number) {
+export async function getAdminArticle(id: number) {
   return http<ApiArticle>(`/api/articles/${id}/`);
+}
+
+export async function deleteArticle(id: number) {
+  return http<{ message: string }>(`/api/articles/${id}/delete/`, { method: "DELETE" });
 }
 
 export async function fetchCategories() {
@@ -30,13 +34,6 @@ export async function fetchTags() {
   return http<{ tags: ApiTag[] }>("/api/tags/");
 }
 
-export async function deleteArticle(id: number) {
-  return http<{ message: string }>(`/api/articles/${id}/delete/`, {
-    method: "DELETE",
-  });
-}
-
-// Create/update pakai FormData (multipart)
 export type ArticlePayload = {
   judul: string;
   konten: string;
@@ -45,38 +42,35 @@ export type ArticlePayload = {
   images?: File[];
 };
 
-function buildFormData(payload: ArticlePayload) {
+function buildFormData(p: ArticlePayload) {
   const fd = new FormData();
-  fd.append("judul", payload.judul);
-  fd.append("konten", payload.konten);
+  fd.append("judul", p.judul);
+  fd.append("konten", p.konten);
 
-  if (payload.category_id === null) fd.append("category_id", "");
-  if (typeof payload.category_id === "number") fd.append("category_id", String(payload.category_id));
+  if (p.category_id === null) fd.append("category_id", "");
+  if (typeof p.category_id === "number") fd.append("category_id", String(p.category_id));
 
-  if (payload.tag_ids) {
-    // pakai repeated key: tag_ids=1&tag_ids=2
-    for (const id of payload.tag_ids) fd.append("tag_ids", String(id));
+  if (p.tag_ids) {
+    for (const id of p.tag_ids) fd.append("tag_ids", String(id));
   }
 
-  if (payload.images?.length) {
-    for (const f of payload.images) fd.append("images", f);
+  if (p.images?.length) {
+    for (const f of p.images) fd.append("images", f);
   }
 
   return fd;
 }
 
-export async function createArticle(payload: ArticlePayload) {
-  const fd = buildFormData(payload);
+export async function createAdminArticle(payload: ArticlePayload) {
   return http<{ message: string; article: ApiArticle }>("/api/articles/create/", {
     method: "POST",
-    body: fd,
+    body: buildFormData(payload),
   });
 }
 
-export async function updateArticle(id: number, payload: ArticlePayload) {
-  const fd = buildFormData(payload);
+export async function updateAdminArticle(id: number, payload: ArticlePayload) {
   return http<{ message: string; article: ApiArticle }>(`/api/articles/${id}/update/`, {
     method: "POST",
-    body: fd,
+    body: buildFormData(payload),
   });
 }

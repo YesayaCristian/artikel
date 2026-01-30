@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Article, ArticleStatus } from "../../data/articles.mock";
-import { slugify } from "../../data/articles.mock";
-import { listCategories } from "../../data/categories.store";
+import { fetchCategories, type ApiCategory } from "../../services/adminArticle";
+
+export type ArticleStatus = "draft" | "published";
 
 export type ArticleFormValues = {
   title: string;
@@ -10,16 +10,39 @@ export type ArticleFormValues = {
   content: string;
   status: ArticleStatus;
 
-  thumbnailUrl?: string; // DataURL base64
-  category: string;
+  thumbnailUrl?: string;      // DataURL preview (tetap dipakai UI)
+  thumbnailFile?: File | null; // ✅ buat upload ke API
+  categoryId: number | null;   // ✅ dari API (bukan nama string)
   tags: string[];
 };
 
+export type ArticleFormInitial = {
+  id?: number;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  status?: ArticleStatus;
+  thumbnailUrl?: string;
+  categoryId?: number | null;
+  tags?: string[];
+  updatedAt?: string;
+};
+
 type Props = {
-  initial?: Article | null;
+  initial?: ArticleFormInitial | null;
   onCancel: () => void;
   onSubmit: (values: ArticleFormValues) => void;
 };
+
+function slugifyLite(text: string) {
+  return (text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
 
 export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
   const [title, setTitle] = useState(initial?.title ?? "");
@@ -29,26 +52,40 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
   const [status, setStatus] = useState<ArticleStatus>(initial?.status ?? "draft");
 
   const [thumbnailUrl, setThumbnailUrl] = useState(initial?.thumbnailUrl ?? "");
-  const [category, setCategory] = useState(initial?.category ?? "Teknologi");
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+
+  const [categoryId, setCategoryId] = useState<number | null>(initial?.categoryId ?? null);
   const [tags, setTags] = useState<string[]>(initial?.tags ?? []);
   const [tagInput, setTagInput] = useState("");
 
-  const categories = useMemo(() => listCategories(), []);
+  const [categories, setCategories] = useState<ApiCategory[]>([]);
 
   const field =
     "w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary-300 focus:ring-4 focus:ring-primary-100";
   const label = "block text-sm font-semibold text-slate-700 mb-1";
 
+  // load categories dari API (ganti categories.store)
   useEffect(() => {
-    if (!initial) setSlug(slugify(title));
-  }, [title, initial]);
+    (async () => {
+      try {
+        const res = await fetchCategories();
+        const list = res.categories ?? [];
+        setCategories(list);
+
+        // kalau belum ada categoryId, set default pertama
+        if ((categoryId === null || categoryId === undefined) && list.length) {
+          setCategoryId(list[0].id);
+        }
+      } catch {
+        setCategories([]);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
-    if (categories.length && !categories.some((c) => c.name === category)) {
-      setCategory(categories[0].name);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categories]);
+    if (!initial) setSlug(slugifyLite(title));
+  }, [title, initial]);
 
   function addTagsFromInput(raw: string) {
     const parts = raw
@@ -66,13 +103,14 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
 
   function handleFile(file?: File | null) {
     if (!file) return;
-
     if (!file.type.startsWith("image/")) return;
+
+    setThumbnailFile(file);
 
     const reader = new FileReader();
     reader.onload = () => {
       const result = String(reader.result || "");
-      setThumbnailUrl(result); // DataURL
+      setThumbnailUrl(result); // DataURL preview (UI tetap)
     };
     reader.readAsDataURL(file);
   }
@@ -85,11 +123,17 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
       excerpt,
       content,
       status,
-      category,
+      categoryId: categoryId ?? null,
       tags,
       thumbnailUrl: thumbnailUrl.trim() || undefined,
+      thumbnailFile,
     });
   }
+
+  const updatedText = useMemo(() => {
+    if (!initial?.updatedAt) return "—";
+    return new Date(initial.updatedAt).toLocaleString();
+  }, [initial?.updatedAt]);
 
   return (
     <form onSubmit={submit} className="space-y-5">
@@ -156,7 +200,10 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
             {thumbnailUrl ? (
               <button
                 type="button"
-                onClick={() => setThumbnailUrl("")}
+                onClick={() => {
+                  setThumbnailUrl("");
+                  setThumbnailFile(null);
+                }}
                 className="rounded-2xl border bg-white px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
               >
                 Remove
@@ -167,11 +214,7 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
           {thumbnailUrl ? (
             <div className="mt-3 overflow-hidden rounded-3xl border bg-slate-50">
               <div className="aspect-[16/9] w-full">
-                <img
-                  src={thumbnailUrl}
-                  alt="Preview"
-                  className="h-full w-full object-cover"
-                />
+                <img src={thumbnailUrl} alt="Preview" className="h-full w-full object-cover" />
               </div>
             </div>
           ) : null}
@@ -213,11 +256,11 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
           <label className={label}>Category</label>
           <select
             className={field}
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={categoryId ?? ""}
+            onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : null)}
           >
             {categories.map((c) => (
-              <option key={c.id} value={c.name}>
+              <option key={c.id} value={c.id}>
                 {c.name}
               </option>
             ))}
@@ -273,7 +316,7 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
         <div className="sm:col-span-1">
           <label className={label}>Updated</label>
           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700">
-            {initial ? new Date(initial.updatedAt).toLocaleString() : "—"}
+            {initial ? updatedText : "—"}
           </div>
         </div>
       </div>

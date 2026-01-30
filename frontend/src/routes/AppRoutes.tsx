@@ -7,7 +7,6 @@ export default function AppRoutes() {
     ...publicRoutes,
     ...adminRoutes,
 
-    // fallback global
     { path: "*", element: <Navigate to="/" replace /> },
   ]);
 }

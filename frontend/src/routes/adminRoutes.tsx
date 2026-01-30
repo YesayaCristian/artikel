@@ -1,5 +1,5 @@
 import type { RouteObject } from "react-router-dom";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
 import ProtectedRoutes from "./ProtectedRoutes";
 import AdminAuthGate from "./AuthGate";
@@ -16,36 +16,39 @@ import TagsPage from "../pages/admin/tags";
 
 const adminRoutes: RouteObject[] = [
   {
-    path: "/admin/login",
-    element: (
-      <AdminAuthGate>
-        <AdminLoginPage />
-      </AdminAuthGate>
-    ),
-  },
-
-  // protected admin area
-  {
     path: "/admin",
-    element: (
-      <ProtectedRoutes>
-        <AdminLayout />
-      </ProtectedRoutes>
-    ),
+    element: <Outlet />, 
     children: [
-      { index: true, element: <Navigate to="dashboard" replace /> },
+      {
+        path: "login",
+        element: (
+          <AdminAuthGate>
+            <AdminLoginPage />
+          </AdminAuthGate>
+        ),
+      },
 
-      { path: "dashboard", element: <DashboardPage /> },
+      {
+        element: (
+          <ProtectedRoutes>
+            <AdminLayout />
+          </ProtectedRoutes>
+        ),
+        children: [
+          { index: true, element: <Navigate to="dashboard" replace /> },
 
-      { path: "articles", element: <AdminArticlesPage /> },
-      { path: "articles/create", element: <CreateArticlePage /> },
-      { path: "articles/edit/:id", element: <EditArticlePage /> },
+          { path: "dashboard", element: <DashboardPage /> },
 
-      { path: "categories", element: <CategoriesPage /> },
-      { path: "tags", element: <TagsPage /> },
+          { path: "articles", element: <AdminArticlesPage /> },
+          { path: "articles/create", element: <CreateArticlePage /> },
+          { path: "articles/edit/:id", element: <EditArticlePage /> },
 
-      // fallback admin
-      { path: "*", element: <Navigate to="dashboard" replace /> },
+          { path: "categories", element: <CategoriesPage /> },
+          { path: "tags", element: <TagsPage /> },
+
+          { path: "*", element: <Navigate to="dashboard" replace /> },
+        ],
+      },
     ],
   },
 ];
