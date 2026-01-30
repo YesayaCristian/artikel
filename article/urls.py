@@ -1,7 +1,10 @@
 from django.urls import path
 from .views import (
     create_article, list_article, detail_article, update_article, delete_article,
-    list_categories, list_tags
+    list_categories, list_tags,
+    create_category, create_tag,
+    update_category, update_tag,
+    delete_category, delete_tag,
 )
 
 urlpatterns = [
@@ -12,7 +15,15 @@ urlpatterns = [
     path("articles/<int:id>/update/", update_article),
     path("articles/<int:id>/delete/", delete_article),
 
-    # categories & tags
+    # categories
     path("categories/", list_categories),
+    path("categories/create/", create_category),
+    path("categories/<int:id>/update/", update_category),
+    path("categories/<int:id>/delete/", delete_category),
+
+    # tags
     path("tags/", list_tags),
+    path("tags/create/", create_tag),
+    path("tags/<int:id>/update/", update_tag),
+    path("tags/<int:id>/delete/", delete_tag),
 ]
