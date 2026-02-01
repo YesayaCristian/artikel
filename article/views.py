@@ -81,7 +81,6 @@ def serialize_article(article: Article):
     }
 
 
-# ---------- CATEGORY ----------
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def list_categories(request):
