@@ -1,8 +1,8 @@
-import PublicLayout from "../../components/layouts/public/PublicLayout";
+import PublicLayout from "../../../components/layouts/public/PublicLayout";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import type { Article } from "../../data/articles.mock";
-import { getPublishedArticleById } from "../../data/publicArticles";
+import type { Article } from "../../../data/articles.mock";
+import { getPublishedArticleById } from "../../../data/publicArticles";
 
 export default function ArticleDetailPage() {
   const { id } = useParams();

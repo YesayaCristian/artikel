@@ -29,6 +29,11 @@ export default function AdminNavLinks({ onNavigate }: Props) {
         Articles
       </NavLink>
 
+      <NavLink to="/admin/professors" className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
+        <span className="text-lg">🏫</span>
+        Professors
+      </NavLink>
+
       {/* ✅ NEW */}
       <NavLink to="/admin/categories" className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
         <span className="text-lg">🏷️</span>

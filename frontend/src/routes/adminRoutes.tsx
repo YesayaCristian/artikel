@@ -13,6 +13,9 @@ import CreateArticlePage from "../pages/admin/articles/create";
 import EditArticlePage from "../pages/admin/articles/edit";
 import CategoriesPage from "../pages/admin/categories";
 import TagsPage from "../pages/admin/tags";
+import AdminProfessorsPage from "../pages/admin/professors";
+import CreateProfessorPage from "../pages/admin/professors/create";
+import EditProfessorPage from "../pages/admin/professors/edit";
 
 const adminRoutes: RouteObject[] = [
   {
@@ -43,8 +46,14 @@ const adminRoutes: RouteObject[] = [
           { path: "articles/create", element: <CreateArticlePage /> },
           { path: "articles/edit/:id", element: <EditArticlePage /> },
 
+          {path : "professors", element: <AdminProfessorsPage />},
+          {path : "professors/create", element: <CreateProfessorPage />},
+          {path : "professors/edit/:id", element: <EditProfessorPage />},
+
           { path: "categories", element: <CategoriesPage /> },
           { path: "tags", element: <TagsPage /> },
+
+          
 
           { path: "*", element: <Navigate to="dashboard" replace /> },
         ],
