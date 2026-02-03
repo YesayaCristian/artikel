@@ -8,7 +8,7 @@ export default function ProfessorCard({ professor }: { professor: Professor }) {
 
   return (
     <Link
-      to={`/dosen/${professor.id}`}
+      to={`/professors/${professor.id}`}
       className="block bg-white rounded-xl border border-blue-100 p-5 hover:shadow-sm transition"
     >
       {photo ? (
