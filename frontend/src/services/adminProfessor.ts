@@ -70,7 +70,7 @@ export async function updateAdminProfessor(
     data.foto.forEach((f) => formData.append("foto_dosen", f)); // ✅ konsisten dengan backend
   }
 
-  return http<any>(`/api/dosen/update/${id}/`, {
+  return http<any>(`/api/dosen/${id}/update/`, {
     method: "POST", // ✅ backend pakai POST
     body: formData,
   });
