@@ -17,7 +17,8 @@ export type ApiArticle = {
 };
 
 function slugifyLite(text: string) {
-  return text
+  const safe = (text ?? "").toString();
+  return safe
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, "")
@@ -61,18 +62,18 @@ export async function listPublishedArticles(): Promise<Article[]> {
   return (json.articles ?? []).map(mapApiToUi);
 }
 
-
 export async function getPublishedArticleById(id: number): Promise<Article | null> {
   const res = await fetch(`${BASE}/api/articles/${id}/`, {
     headers: { Accept: "application/json" },
   });
 
   if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Fetch detail gagal: ${res.status} ${res.statusText}`);
 
-  if (!res.ok) {
-    throw new Error(`Fetch detail gagal: ${res.status} ${res.statusText}`);
-  }
+  const json = await res.json();
 
-  const data = (await res.json()) as ApiArticle;
+  // handle kemungkinan dibungkus
+  const data = (json?.article ?? json?.data ?? json) as ApiArticle;
+
   return mapApiToUi(data);
 }
