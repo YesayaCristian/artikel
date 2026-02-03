@@ -13,9 +13,9 @@ import CreateArticlePage from "../pages/admin/articles/create";
 import EditArticlePage from "../pages/admin/articles/edit";
 import CategoriesPage from "../pages/admin/categories";
 import TagsPage from "../pages/admin/tags";
-import AdminProfessorsPage from "../pages/professor";
-import CreateProfessorPage from "../pages/professor/create";
-import EditProfessorPage from "../pages/professor/edit";
+import AdminProfessorsPage from "../pages/admin/professors";
+import CreateProfessorPage from "../pages/admin/professors/create";
+import EditProfessorPage from "../pages/admin/professors/edit";
 
 const adminRoutes: RouteObject[] = [
   {

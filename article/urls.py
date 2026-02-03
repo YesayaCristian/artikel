@@ -1,11 +1,13 @@
 from django.urls import path
 from .views import (
-    create_article, list_article,
-    detail_article, update_article, delete_article,
-    list_categories, list_tags,
-    create_category, create_tag,
-    update_category, update_tag,
-    delete_category, delete_tag,
+    # articles
+    list_article, create_article, detail_article, update_article, delete_article,
+    # categories
+    list_categories, create_category, update_category, delete_category,
+    # tags
+    list_tags, create_tag, update_tag, delete_tag,
+    # dosen
+    list_dosen, detail_dosen, create_dosen, update_dosen, delete_dosen,
 )
 
 urlpatterns = [
@@ -28,9 +30,12 @@ urlpatterns = [
     path("tags/<int:id>/update/", update_tag),
     path("tags/<int:id>/delete/", delete_tag),
 
-    # Dosen URLs
-    path("api/dosen/list/", list_dosen),
-    path("api/dosen/create/", create_dosen),
-    path("api/dosen/update/<int:id>/", update_dosen),
-    path("api/dosen/delete/<int:id>/", delete_dosen),
+    # dosen (PUBLIC)
+    path("dosen/list/", list_dosen),
+    path("dosen/<int:id>/", detail_dosen),
+
+    # dosen (ADMIN)
+    path("dosen/create/", create_dosen),
+    path("dosen/<int:id>/update/", update_dosen),
+    path("dosen/<int:id>/delete/", delete_dosen),
 ]

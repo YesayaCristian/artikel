@@ -1,4 +1,3 @@
-// services/adminProfessor.ts
 import { http } from "../lib/http";
 
 export type ApiProfessor = {
@@ -9,18 +8,17 @@ export type ApiProfessor = {
   fakultas: string;
   program_studi: string;
   penelitian: string;
-  foto_dosen?: string;   // ✅ konsisten dengan backend
+  foto_dosen?: string;  
   created_at: string;
 };
 
-// ✅ Ambil daftar dosen
 export async function fetchProfessors(): Promise<{ dosens: ApiProfessor[] }> {
   return http<{ dosens: ApiProfessor[] }>("/api/dosen/list/");
 }
 
 // ✅ Ambil detail dosen by ID
 export async function getAdminProfessor(id: number): Promise<ApiProfessor> {
-  return http<ApiProfessor>(`/api/dosen/detail/${id}/`);
+  return http<ApiProfessor>(`/api/dosen/${id}/`);
 }
 
 // ✅ Create dosen baru
@@ -72,15 +70,12 @@ export async function updateAdminProfessor(
     data.foto.forEach((f) => formData.append("foto_dosen", f)); // ✅ konsisten dengan backend
   }
 
-  return http<any>(`/api/dosen/update/${id}`, {
+  return http<any>(`/api/dosen/update/${id}/`, {
     method: "POST", // ✅ backend pakai POST
     body: formData,
   });
 }
 
-// ✅ Delete dosen
-export async function deleteAdminProfessor(id: number): Promise<any> {
-  return http<any>(`/api/dosen/delete/${id}`, {
-    method: "DELETE",
-  });
+export async function deleteAdminProfessor(id: number) {
+  return http(`/api/dosen/${id}/delete/`, { method: "DELETE" });
 }

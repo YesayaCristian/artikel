@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import PublicLayout from "../../components/layouts/public/PublicLayout";
-import ArticleCard from "../../components/articles/ArticleCard";
-import type { Article } from "../../data/articles.mock";
-import { listPublishedArticles } from "../../data/publicArticles";
+import PublicLayout from "../../../components/layouts/public/PublicLayout";
+import ArticleCard from "../../../components/articles/ArticleCard";
+import type { Article } from "../../../data/articles.mock";
+import { listPublishedArticles } from "../../../data/publicArticles";
 
 export default function ArticlesPage() {
   const [loading, setLoading] = useState(true);

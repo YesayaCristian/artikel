@@ -15,7 +15,6 @@ function clearTokens() {
 }
 
 function buildUrl(path: string) {
-  // kamu sudah passing "/api/...."
   if (!path.startsWith("/")) path = "/" + path;
   return `${BASE}${path}`;
 }
@@ -37,12 +36,6 @@ async function refreshAccessToken(): Promise<string | null> {
   return data.access as string;
 }
 
-/**
- * http<T>(path, init?)
- * - path: "/api/...."
- * - otomatis attach Bearer token
- * - kalau 401: coba refresh 1x
- */
 export async function http<T>(path: string, init: RequestInit = {}, retry = true): Promise<T> {
   const token = getAccessToken();
 
