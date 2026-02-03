@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export type ProfessorFormValues = {
   nama_dosen: string;
@@ -6,7 +6,7 @@ export type ProfessorFormValues = {
   fakultas: string;
   program_studi: string;
   penelitian: string;
-  fotoUrl?: string;       // DataURL preview (UI)
+  fotoUrl?: string; // DataURL preview (UI)
   fotoFile?: File | null; // File upload ke API
 };
 
@@ -36,6 +36,19 @@ export default function ProfessorForm({ initial, onCancel, onSubmit }: Props) {
 
   const [fotoUrl, setFotoUrl] = useState(initial?.fotoUrl ?? "");
   const [fotoFile, setFotoFile] = useState<File | null>(null);
+
+  // ✅ penting: saat initial datang dari API (async), isi state form agar tidak empty
+  useEffect(() => {
+    if (!initial) return;
+
+    setNamaDosen(initial.nama_dosen ?? "");
+    setNidn(initial.nidn ?? "");
+    setFakultas(initial.fakultas ?? "");
+    setProgramStudi(initial.program_studi ?? "");
+    setPenelitian(initial.penelitian ?? "");
+    setFotoUrl(initial.fotoUrl ?? "");
+    setFotoFile(null); // reset file (biar tidak keupload ulang)
+  }, [initial]);
 
   const field =
     "w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary-300 focus:ring-4 focus:ring-primary-100";

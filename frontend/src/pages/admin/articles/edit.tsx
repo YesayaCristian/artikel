@@ -12,6 +12,7 @@ function slugifyLite(text: string) {
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
 }
+
 function makeExcerpt(text: string, max = 140) {
   const clean = (text || "").replace(/\s+/g, " ").trim();
   if (clean.length <= max) return clean;
@@ -46,7 +47,7 @@ export default function EditArticlePage() {
           content: a.konten,
           categoryId: a.category?.id ?? null,
           tags: (a.tags ?? []).map((x) => x.name),
-          thumbnailUrl: "",
+          thumbnailUrl: "", // kalau mau tampil thumbnail lama, isi dari API
           updatedAt: a.created_at,
         });
       } catch {

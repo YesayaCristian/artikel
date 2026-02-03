@@ -18,8 +18,10 @@ export async function fetchAdminArticles() {
   return http<{ articles: ApiArticle[] }>("/api/articles/");
 }
 
-export async function getAdminArticle(id: number) {
-  return http<ApiArticle>(`/api/articles/${id}/`);
+// ✅ FIX: unwrap response detail (kalau backend membungkus)
+export async function getAdminArticle(id: number): Promise<ApiArticle> {
+  const json = await http<any>(`/api/articles/${id}/`);
+  return (json?.article ?? json?.data ?? json) as ApiArticle;
 }
 
 export async function deleteArticle(id: number) {
@@ -50,7 +52,7 @@ function buildFormData(p: ArticlePayload) {
   if (p.category_id === null) fd.append("category_id", "");
   if (typeof p.category_id === "number") fd.append("category_id", String(p.category_id));
 
-  if (p.tag_ids) {
+  if (p.tag_ids?.length) {
     for (const id of p.tag_ids) fd.append("tag_ids", String(id));
   }
 

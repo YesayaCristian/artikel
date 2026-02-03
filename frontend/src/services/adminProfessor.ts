@@ -8,17 +8,19 @@ export type ApiProfessor = {
   fakultas: string;
   program_studi: string;
   penelitian: string;
-  foto_dosen?: string;  
+  foto_dosen?: string;
   created_at: string;
+  updated_at?: string;
 };
 
 export async function fetchProfessors(): Promise<{ dosens: ApiProfessor[] }> {
   return http<{ dosens: ApiProfessor[] }>("/api/dosen/list/");
 }
 
-// ✅ Ambil detail dosen by ID
+// ✅ FIX: unwrap response detail (kalau backend membungkus)
 export async function getAdminProfessor(id: number): Promise<ApiProfessor> {
-  return http<ApiProfessor>(`/api/dosen/${id}/`);
+  const json = await http<any>(`/api/dosen/${id}/`);
+  return (json?.dosen ?? json?.professor ?? json?.data ?? json) as ApiProfessor;
 }
 
 // ✅ Create dosen baru
@@ -37,8 +39,8 @@ export async function createAdminProfessor(data: {
   formData.append("program_studi", data.program_studi);
   formData.append("penelitian", data.penelitian);
 
-  if (data.foto) {
-    data.foto.forEach((f) => formData.append("foto_dosen", f)); // ✅ konsisten dengan backend
+  if (data.foto?.length) {
+    data.foto.forEach((f) => formData.append("foto_dosen", f));
   }
 
   return http<any>("/api/dosen/create/", {
@@ -66,12 +68,12 @@ export async function updateAdminProfessor(
   formData.append("program_studi", data.program_studi);
   formData.append("penelitian", data.penelitian);
 
-  if (data.foto) {
-    data.foto.forEach((f) => formData.append("foto_dosen", f)); // ✅ konsisten dengan backend
+  if (data.foto?.length) {
+    data.foto.forEach((f) => formData.append("foto_dosen", f));
   }
 
   return http<any>(`/api/dosen/${id}/update/`, {
-    method: "POST", // ✅ backend pakai POST
+    method: "POST",
     body: formData,
   });
 }

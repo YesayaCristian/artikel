@@ -8,9 +8,9 @@ export type ArticleFormValues = {
   slug: string;
   excerpt: string;
   content: string;
-  thumbnailUrl?: string;      // DataURL preview (tetap dipakai UI)
-  thumbnailFile?: File | null; // ✅ buat upload ke API
-  categoryId: number | null;   // ✅ dari API (bukan nama string)
+  thumbnailUrl?: string; // DataURL preview (UI)
+  thumbnailFile?: File | null; // ✅ upload ke API
+  categoryId: number | null; 
   tags: string[];
 };
 
@@ -56,11 +56,28 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
 
   const [categories, setCategories] = useState<ApiCategory[]>([]);
 
+  // ✅ penting: sync state saat initial berubah (hasil fetch edit)
+  useEffect(() => {
+    if (!initial) return;
+
+    setTitle(initial.title ?? "");
+    setSlug(initial.slug ?? "");
+    setExcerpt(initial.excerpt ?? "");
+    setContent(initial.content ?? "");
+
+    setThumbnailUrl(initial.thumbnailUrl ?? "");
+    setThumbnailFile(null);
+
+    setCategoryId(initial.categoryId ?? null);
+    setTags(initial.tags ?? []);
+    setTagInput("");
+  }, [initial]);
+
   const field =
     "w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary-300 focus:ring-4 focus:ring-primary-100";
   const label = "block text-sm font-semibold text-slate-700 mb-1";
 
-  // load categories dari API (ganti categories.store)
+  // load categories dari API
   useEffect(() => {
     (async () => {
       try {
@@ -69,9 +86,10 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
         setCategories(list);
 
         // kalau belum ada categoryId, set default pertama
-        if ((categoryId === null || categoryId === undefined) && list.length) {
-          setCategoryId(list[0].id);
-        }
+        setCategoryId((current) => {
+          if ((current === null || current === undefined) && list.length) return list[0].id;
+          return current ?? null;
+        });
       } catch {
         setCategories([]);
       }
@@ -79,6 +97,7 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // auto-slug hanya untuk create (kalau edit biarin sesuai initial / user)
   useEffect(() => {
     if (!initial) setSlug(slugifyLite(title));
   }, [title, initial]);
@@ -106,7 +125,7 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
     const reader = new FileReader();
     reader.onload = () => {
       const result = String(reader.result || "");
-      setThumbnailUrl(result); // DataURL preview (UI tetap)
+      setThumbnailUrl(result); // DataURL preview
     };
     reader.readAsDataURL(file);
   }
