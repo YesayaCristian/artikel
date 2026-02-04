@@ -22,6 +22,9 @@ import EditFacultyPage from "../pages/admin/faculties/edit";
 import AdminStudyProgramPage from "../pages/admin/study_program/";
 import CreateStudyProgramPage from "../pages/admin/study_program/create"
 import EditStudyProgramPage from "../pages/admin/study_program/edit";
+import AdminCoursesPage from "../pages/admin/course";
+import CreateCoursePage from "../pages/admin/course/create";
+import EditCoursePage from "../pages/admin/course/edit";
 
 
 
@@ -65,6 +68,10 @@ const adminRoutes: RouteObject[] = [
           {path : "study_program", element: <AdminStudyProgramPage/>},
           {path : "study_program/create", element: <CreateStudyProgramPage/>},
           {path : "study_program/edit/:id", element: <EditStudyProgramPage/>},
+
+          {path: "course", element: <AdminCoursesPage />,},
+          {path: "course/create", element: <CreateCoursePage />,},
+          {path: "course/edit/:id", element: <EditCoursePage />,},
 
           { path: "categories", element: <CategoriesPage /> },
           { path: "tags", element: <TagsPage /> },

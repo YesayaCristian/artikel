@@ -39,6 +39,11 @@ export default function AdminNavLinks({ onNavigate }: Props) {
         Study Programs
       </NavLink>
 
+      <NavLink to="/admin/course" className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
+        <span className="text-lg">🏫</span>
+        Course
+      </NavLink>
+
       <NavLink to="/admin/faculties" className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
         <span className="text-lg">🏫</span>
         Faculties
