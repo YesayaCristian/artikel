@@ -14,7 +14,6 @@ export default function ArticlesPage() {
 
   // filters
   const [category, setCategory] = useState<string>("all");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   useEffect(() => {
     let alive = true;
@@ -45,21 +44,8 @@ export default function ArticlesPage() {
     return ["all", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
   }, [articles]);
 
-  const tagOptions = useMemo(() => {
-    const set = new Set<string>();
-    for (const a of articles) (a.tags || []).forEach((t) => set.add(t.toLowerCase()));
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }, [articles]);
-
-  function toggleTag(tag: string) {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((x) => x !== tag) : [...prev, tag]
-    );
-  }
-
   function clearFilters() {
     setCategory("all");
-    setSelectedTags([]);
     setQ("");
   }
 
@@ -67,15 +53,14 @@ export default function ArticlesPage() {
     const query = q.toLowerCase().trim();
 
     return articles.filter((a) => {
-      // 1) search
+      // 1) search (tanpa tags)
       const matchSearch =
         !query ||
         a.title.toLowerCase().includes(query) ||
         a.slug.toLowerCase().includes(query) ||
         (a.excerpt || "").toLowerCase().includes(query) ||
         (a.content || "").toLowerCase().includes(query) ||
-        (a.category || "").toLowerCase().includes(query) ||
-        (a.tags || []).some((t) => t.toLowerCase().includes(query));
+        (a.category || "").toLowerCase().includes(query);
 
       if (!matchSearch) return false;
 
@@ -83,18 +68,11 @@ export default function ArticlesPage() {
       const matchCategory = category === "all" || (a.category || "Uncategorized") === category;
       if (!matchCategory) return false;
 
-      // 3) tags (AND mode: harus punya semua tag yang dipilih)
-      if (selectedTags.length) {
-        const lowerTags = (a.tags || []).map((t) => t.toLowerCase());
-        const matchTags = selectedTags.every((t) => lowerTags.includes(t));
-        if (!matchTags) return false;
-      }
-
       return true;
     });
-  }, [articles, q, category, selectedTags]);
+  }, [articles, q, category]);
 
-  const hasActiveFilters = category !== "all" || selectedTags.length > 0 || q.trim().length > 0;
+  const hasActiveFilters = category !== "all" || q.trim().length > 0;
 
   return (
     <PublicLayout>
@@ -115,7 +93,7 @@ export default function ArticlesPage() {
           <span className="text-gray-400">⌕</span>
           <input
             className="w-full bg-transparent outline-none text-sm"
-            placeholder="Search title / slug / category / tag..."
+            placeholder="Search title / slug / category..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -131,7 +109,7 @@ export default function ArticlesPage() {
         </div>
 
         {/* Filters row */}
-        <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-[260px_1fr_auto] md:items-start">
+        <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-[260px_auto] md:items-start">
           {/* Category */}
           <div className="rounded-xl border bg-white p-3">
             <div className="text-sm font-semibold text-gray-800 mb-2">Category</div>
@@ -147,53 +125,6 @@ export default function ArticlesPage() {
                 </option>
               ))}
             </select>
-          </div>
-
-          {/* Tags */}
-          <div className="rounded-xl border bg-white p-3">
-            <div className="flex items-center justify-between gap-3 mb-2">
-              <div className="text-sm font-semibold text-gray-800">Tags</div>
-              {selectedTags.length ? (
-                <button
-                  type="button"
-                  onClick={() => setSelectedTags([])}
-                  className="text-xs font-semibold text-blue-600 hover:text-blue-800"
-                >
-                  Clear tags
-                </button>
-              ) : null}
-            </div>
-
-            {loading ? (
-              <div className="flex flex-wrap gap-2">
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <div key={i} className="h-7 w-20 rounded-full bg-gray-100" />
-                ))}
-              </div>
-            ) : tagOptions.length === 0 ? (
-              <div className="text-sm text-gray-500">No tags</div>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {tagOptions.map((t) => {
-                  const active = selectedTags.includes(t);
-                  return (
-                    <button
-                      type="button"
-                      key={t}
-                      onClick={() => toggleTag(t)}
-                      className={
-                        "rounded-full px-3 py-1 text-xs font-semibold border transition " +
-                        (active
-                          ? "bg-blue-600 text-white border-blue-600"
-                          : "bg-blue-50 text-blue-700 border-blue-100 hover:border-blue-300")
-                      }
-                    >
-                      #{t}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
           </div>
 
           {/* Clear all */}

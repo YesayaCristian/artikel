@@ -1,7 +1,6 @@
 import { http } from "../lib/http";
 
 export type ApiCategory = { id: number; name: string; slug: string };
-export type ApiTag = { id: number; name: string; slug: string };
 
 export type ApiArticle = {
   id: number;
@@ -11,14 +10,12 @@ export type ApiArticle = {
   created_at: string;
   images: string[];
   category: ApiCategory | null;
-  tags: ApiTag[];
 };
 
 export async function fetchAdminArticles() {
   return http<{ articles: ApiArticle[] }>("/api/articles/");
 }
 
-// ✅ FIX: unwrap response detail (kalau backend membungkus)
 export async function getAdminArticle(id: number): Promise<ApiArticle> {
   const json = await http<any>(`/api/articles/${id}/`);
   return (json?.article ?? json?.data ?? json) as ApiArticle;
@@ -32,15 +29,10 @@ export async function fetchCategories() {
   return http<{ categories: ApiCategory[] }>("/api/categories/");
 }
 
-export async function fetchTags() {
-  return http<{ tags: ApiTag[] }>("/api/tags/");
-}
-
 export type ArticlePayload = {
   judul: string;
   konten: string;
   category_id?: number | null;
-  tag_ids?: number[];
   images?: File[];
 };
 
@@ -51,10 +43,6 @@ function buildFormData(p: ArticlePayload) {
 
   if (p.category_id === null) fd.append("category_id", "");
   if (typeof p.category_id === "number") fd.append("category_id", String(p.category_id));
-
-  if (p.tag_ids?.length) {
-    for (const id of p.tag_ids) fd.append("tag_ids", String(id));
-  }
 
   if (p.images?.length) {
     for (const f of p.images) fd.append("images", f);

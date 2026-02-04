@@ -12,7 +12,6 @@ import AdminArticlesPage from "../pages/admin/articles";
 import CreateArticlePage from "../pages/admin/articles/create";
 import EditArticlePage from "../pages/admin/articles/edit";
 import CategoriesPage from "../pages/admin/categories";
-import TagsPage from "../pages/admin/tags";
 import AdminProfessorsPage from "../pages/admin/professors";
 import CreateProfessorPage from "../pages/admin/professors/create";
 import EditProfessorPage from "../pages/admin/professors/edit";
@@ -60,8 +59,6 @@ const adminRoutes: RouteObject[] = [
           {path : "faculties/edit/:id", element: <EditFacultyPage/>},
 
           { path: "categories", element: <CategoriesPage /> },
-          { path: "tags", element: <TagsPage /> },
-
 
           
           

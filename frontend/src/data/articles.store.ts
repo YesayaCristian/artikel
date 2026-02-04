@@ -1,6 +1,5 @@
 import type { Article } from "./articles.mock";
 import { initialArticles } from "./articles.mock";
-import { ensureTagsExist } from "./tags.store";
 
 const KEY = "ARTICLES_V1";
 
@@ -36,12 +35,10 @@ export function createArticle(values: Omit<Article, "id" | "updatedAt">) {
     id: nextId,
     ...values,
     category: values.category ?? "Teknologi",
-    tags: values.tags ?? [],
     thumbnailUrl: values.thumbnailUrl?.trim() || undefined,
     updatedAt: now,
   };
 
-  ensureTagsExist(newArticle.tags ?? []);
 
   save([newArticle, ...items]);
   return newArticle;
@@ -56,13 +53,10 @@ export function updateArticle(id: number, values: Article) {
     ...values,
     id,
     category: values.category ?? "Teknologi",
-    tags: values.tags ?? [],
     thumbnailUrl: values.thumbnailUrl?.trim() || undefined,
     updatedAt: new Date().toISOString(),
   };
 
-  // ✅ auto sync tags
-  ensureTagsExist(updated.tags ?? []);
 
   const next = [...items];
   next[idx] = updated;

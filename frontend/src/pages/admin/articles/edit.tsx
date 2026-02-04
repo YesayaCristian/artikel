@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ArticleForm, { type ArticleFormValues, type ArticleFormInitial } from "../../../components/articles/ArticleForm";
 import { useToast } from "../../../components/ui/toast/ToastProvider";
-import { fetchTags, getAdminArticle, updateAdminArticle, type ApiTag } from "../../../services/adminArticle";
+import { getAdminArticle, updateAdminArticle } from "../../../services/adminArticle";
 
 function slugifyLite(text: string) {
   return (text || "")
@@ -29,15 +29,13 @@ export default function EditArticlePage() {
 
   const [loading, setLoading] = useState(true);
   const [initial, setInitial] = useState<ArticleFormInitial | null>(null);
-  const [tags, setTags] = useState<ApiTag[]>([]);
 
   useEffect(() => {
     if (!validId) return;
 
     (async () => {
       try {
-        const [a, t] = await Promise.all([getAdminArticle(articleId), fetchTags()]);
-        setTags(t.tags ?? []);
+        const a = await getAdminArticle(articleId);
 
         setInitial({
           id: a.id,
@@ -46,7 +44,7 @@ export default function EditArticlePage() {
           excerpt: makeExcerpt(a.konten),
           content: a.konten,
           categoryId: a.category?.id ?? null,
-          tags: (a.tags ?? []).map((x) => x.name),
+          // ❌ tags dihapus
           thumbnailUrl: "", // kalau mau tampil thumbnail lama, isi dari API
           updatedAt: a.created_at,
         });
@@ -83,13 +81,6 @@ export default function EditArticlePage() {
     );
   }
 
-  function mapTagNamesToIds(tagNames: string[]) {
-    const lower = new Map(tags.map((t) => [t.name.toLowerCase(), t.id]));
-    return tagNames
-      .map((n) => lower.get(n.toLowerCase()))
-      .filter((x): x is number => typeof x === "number");
-  }
-
   return (
     <div className="space-y-4">
       <div>
@@ -106,7 +97,7 @@ export default function EditArticlePage() {
               judul: values.title,
               konten: values.content,
               category_id: values.categoryId ?? null,
-              tag_ids: mapTagNamesToIds(values.tags),
+
               images: values.thumbnailFile ? [values.thumbnailFile] : undefined,
             });
 

@@ -44,11 +44,6 @@ export default function AdminNavLinks({ onNavigate }: Props) {
         <span className="text-lg">🏷️</span>
         Categories
       </NavLink>
-
-      <NavLink to="/admin/tags" className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
-        <span className="text-lg">#️⃣</span>
-        Tags
-      </NavLink>
     </nav>
   );
 }

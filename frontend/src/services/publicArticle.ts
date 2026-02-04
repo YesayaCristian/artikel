@@ -1,7 +1,6 @@
 const BASE = import.meta.env.VITE_API_BASE_URL as string;
 
 export type ApiCategory = { id: number; name: string; slug: string };
-export type ApiTag = { id: number; name: string; slug: string };
 
 export type ApiArticle = {
   id: number;
@@ -11,7 +10,6 @@ export type ApiArticle = {
   created_at: string;
   images: string[];
   category?: ApiCategory | null;
-  tags?: ApiTag[];
 };
 
 export async function fetchPublicArticles(): Promise<ApiArticle[]> {

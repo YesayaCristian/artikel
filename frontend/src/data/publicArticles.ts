@@ -3,7 +3,6 @@ import type { Article } from "./articles.mock";
 const BASE = import.meta.env.VITE_API_BASE_URL as string;
 
 export type ApiCategory = { id: number; name: string; slug: string };
-export type ApiTag = { id: number; name: string; slug: string };
 
 export type ApiArticle = {
   id: number;
@@ -13,7 +12,6 @@ export type ApiArticle = {
   created_at: string;
   images: string[];
   category?: ApiCategory | null;
-  tags?: ApiTag[];
 };
 
 function slugifyLite(text: string) {
@@ -42,7 +40,6 @@ function mapApiToUi(a: ApiArticle): Article {
     excerpt: makeExcerpt(a.konten),
     content: a.konten,
     category: a.category?.name ?? "Uncategorized",
-    tags: (a.tags ?? []).map((t) => t.name),
     thumbnailUrl,
     updatedAt: a.created_at,
   };

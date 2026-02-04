@@ -103,16 +103,7 @@ export default function ArticleDetailPage() {
           <p className="text-black-800 leading-relaxed whitespace-pre-wrap">{article.content}</p>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-blue-100">
-          <p className="text-black-700 font-medium mb-3">Tags:</p>
-          <div className="flex flex-wrap gap-2">
-            {(article.tags || []).map((tag) => (
-              <span key={tag} className="bg-blue-50 text-blue-700 px-3 py-1 rounded text-sm">
-                #{tag}
-              </span>
-            ))}
-          </div>
-        </div>
+        {/* ❌ Bagian Tags dihapus total */}
       </div>
     </PublicLayout>
   );

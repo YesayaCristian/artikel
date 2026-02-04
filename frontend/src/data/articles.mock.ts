@@ -8,8 +8,6 @@ export type Article = {
   content: string;
   thumbnailUrl?: string | null;
   category: string;
-  tags: string[];
-
   updatedAt: string;
 };
 
@@ -22,7 +20,6 @@ export const initialArticles: Article[] = [
     content: "Isi artikel pertama...",
     thumbnailUrl: "https://picsum.photos/seed/artikel1/800/450",
     category: "Teknologi",
-    tags: ["react", "admin"],
     updatedAt: new Date().toISOString(),
   },
   {
@@ -33,7 +30,6 @@ export const initialArticles: Article[] = [
     content: "Isi draft...",
     thumbnailUrl: "https://picsum.photos/seed/artikel2/800/450",
     category: "Tutorial",
-    tags: ["draft", "tips"],
     updatedAt: new Date().toISOString(),
   },
 ];
