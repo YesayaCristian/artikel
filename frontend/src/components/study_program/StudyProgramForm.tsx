@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { fetchFaculties } from "../../services/adminFaculty";
 
 export type Fakultas = {
   id: number;
@@ -31,25 +32,43 @@ type Props = {
   onSubmit: (values: StudyProgramFormValues) => void;
 };
 
-export default function StudyProgramForm({ initial, onCancel, onSubmit }: Props) {
+export default function StudyProgramForm({
+  initial,
+  onCancel,
+  onSubmit,
+}: Props) {
   const [kode_prodi, setKodeProdi] = useState(initial?.kode_prodi ?? "");
   const [nama_prodi, setNamaProdi] = useState(initial?.nama_prodi ?? "");
-  const [jenjang, setJenjang] = useState<"D3" | "D4" | "S1">(initial?.jenjang ?? "S1");
+  const [jenjang, setJenjang] = useState<"D3" | "D4" | "S1">(
+    initial?.jenjang ?? "S1"
+  );
   const [akreditasi, setAkreditasi] =
     useState<"A" | "B" | "C" | "Unggul">(initial?.akreditasi ?? "B");
-  const [id_fakultas, setIdFakultas] = useState(initial?.id_fakultas ?? 0);
+  const [id_fakultas, setIdFakultas] = useState<number>(
+    initial?.id_fakultas ?? 0
+  );
   const [kaprodi, setKaprodi] = useState(initial?.kaprodi ?? "");
 
   const [fakultas, setFakultas] = useState<Fakultas[]>([]);
+  const [loadingFakultas, setLoadingFakultas] = useState(true);
 
   const field =
     "w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary-300 focus:ring-4 focus:ring-primary-100";
   const label = "block text-sm font-semibold text-slate-700 mb-1";
 
+  // ✅ FETCH FAKULTAS (FIX)
   useEffect(() => {
-    fetch("/api/fakultas") // ⬅️ endpoint kamu
-      .then((res) => res.json())
-      .then(setFakultas);
+    (async () => {
+      try {
+        const res = await fetchFaculties();
+        setFakultas(res.fakultas ?? []);
+      } catch (e) {
+        console.error("Gagal load fakultas", e);
+        setFakultas([]);
+      } finally {
+        setLoadingFakultas(false);
+      }
+    })();
   }, []);
 
   function submit(e: React.FormEvent) {
@@ -154,7 +173,9 @@ export default function StudyProgramForm({ initial, onCancel, onSubmit }: Props)
             onChange={(e) => setIdFakultas(Number(e.target.value))}
             required
           >
-            <option value={0}>— Pilih Fakultas —</option>
+            <option value={0} disabled>
+              {loadingFakultas ? "Loading fakultas..." : "— Pilih Fakultas —"}
+            </option>
             {fakultas.map((f) => (
               <option key={f.id} value={f.id}>
                 {f.nama_fakultas}
