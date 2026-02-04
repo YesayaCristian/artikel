@@ -7,20 +7,24 @@ export type ApiStudyProgram = {
   nama_prodi: string;
   jenjang: "D3" | "D4" | "S1";
   akreditasi: "A" | "B" | "C" | "Unggul";
-  id_fakultas: number;
-  nama_fakultas?: string;
   kaprodi: string;
-  created_at: string;
+  fakultas: {
+    id: number;
+    kode_fakultas: string;
+    nama_fakultas: string;
+  };
 };
 
 
-export async function fetchStudyPrograms(): Promise<{ study_programs: ApiStudyProgram[] }> {
-  return http<{ study_programs: ApiStudyProgram[] }>("/api/study-program/list/");
+
+export async function fetchStudyPrograms(): Promise<{ program_studi: ApiStudyProgram[] }> {
+  return http<{ program_studi: ApiStudyProgram[] }>("/api/program_study/");
 }
 
 
+
 export async function getAdminStudyProgram(id: number): Promise<ApiStudyProgram> {
-  return http<ApiStudyProgram>(`/api/study-program/${id}/`);
+  return http<ApiStudyProgram>(`/api/program_study/${id}/`);
 }
 
 
@@ -32,7 +36,7 @@ export async function createAdminStudyProgram(data: {
   id_fakultas: number;
   kaprodi: string;
 }): Promise<any> {
-  return http<any>("/api/study-program/create/", {
+  return http<any>("/api/program_study/create/", {
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -49,14 +53,14 @@ export async function updateAdminStudyProgram(
     kaprodi: string;
   }
 ): Promise<any> {
-  return http<any>(`/api/study-program/${id}/update/`, {
-    method: "POST", // ✅ konsisten dengan backend
+  return http<any>(`/api/program_study/update/${id}/`, {
+    method: "PUT",
     body: JSON.stringify(data),
   });
 }
 
 export async function deleteAdminStudyProgram(id: number) {
-  return http(`/api/study-program/${id}/delete/`, {
+  return http(`/api/program_study/delete/${id}/`, {
     method: "DELETE",
   });
 }

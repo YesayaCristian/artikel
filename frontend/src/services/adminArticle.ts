@@ -18,8 +18,9 @@ export async function fetchAdminArticles() {
   return http<{ articles: ApiArticle[] }>("/api/articles/");
 }
 
-export async function getAdminArticle(id: number) {
-  return http<ApiArticle>(`/api/articles/${id}/`);
+export async function getAdminArticle(id: number): Promise<ApiArticle> {
+  const res = await http<{ article: ApiArticle }>(`/api/articles/${id}/`);
+  return res.article;
 }
 
 export async function deleteArticle(id: number) {

@@ -289,55 +289,44 @@ def detail_article(request, id):
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, FormParser])
 def update_article(request, id):
-    article = get_object_or_404(Article, id=id)
+    try:
+        article = Article.objects.get(id=id)
+    except Article.DoesNotExist:
+        return Response({"error": "Artikel tidak ditemukan"}, status=404)
 
-    # author boleh edit, admin (is_staff) juga boleh edit
-    if article.author != request.user and not request.user.is_staff:
-        return Response({"error": "Tidak punya izin mengupdate artikel ini"}, status=status.HTTP_403_FORBIDDEN)
-
-    images = request.FILES.getlist("images")
-
-    # fields
     judul = request.data.get("judul")
     konten = request.data.get("konten")
-
-    # update category & tags hanya kalau key ada
-    has_category_key = "category_id" in request.data
-    has_tags_key = ("tag_ids" in request.data) or (len(request.data.getlist("tag_ids")) > 0)
+    category_id = request.data.get("category_id")
+    tag_ids = parse_int_list_from_request(request, "tag_ids")
+    images = request.FILES.getlist("images")
 
     if judul:
         article.judul = judul
     if konten:
         article.konten = konten
 
-    if has_category_key:
-        category_id = request.data.get("category_id")
-        if not category_id:
-            article.category = None
-        else:
-            try:
-                article.category = Category.objects.get(id=int(category_id))
-            except Category.DoesNotExist:
-                return Response({"error": "category tidak ditemukan"}, status=status.HTTP_400_BAD_REQUEST)
-            except:
-                return Response({"error": "category_id tidak valid"}, status=status.HTTP_400_BAD_REQUEST)
+    if category_id:
+        try:
+            article.category = Category.objects.get(id=int(category_id))
+        except Category.DoesNotExist:
+            return Response({"error": "Category tidak ditemukan"}, status=400)
 
     article.save()
 
-    if has_tags_key:
-        tag_ids = parse_int_list_from_request(request, "tag_ids")
-        if tag_ids is None:
-            tag_ids = []
+    if tag_ids is not None:
         tags = Tag.objects.filter(id__in=tag_ids)
         article.tags.set(tags)
 
+    # ⚠️ kalau upload gambar baru → hapus lama (opsional)
     if images:
         article.images.all().delete()
         for img in images:
             ArticleImage.objects.create(article=article, image=img)
 
-    return Response({"message": "Artikel berhasil diupdate", "article": serialize_article(article)}, status=status.HTTP_200_OK)
-
+    return Response({
+        "message": "Artikel berhasil diupdate",
+        "article": serialize_article(article)
+    })
 
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])

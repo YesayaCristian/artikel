@@ -6,8 +6,8 @@ export type ProfessorFormValues = {
   fakultas: string;
   program_studi: string;
   penelitian: string;
-  fotoUrl?: string;       // DataURL preview (UI)
-  fotoFile?: File | null; // File upload ke API
+  fotoUrl?: string;       // preview (DataURL atau base URL)
+  fotoFile?: File | null; // file baru upload ke API
 };
 
 export type ProfessorFormInitial = {
@@ -17,7 +17,7 @@ export type ProfessorFormInitial = {
   fakultas: string;
   program_studi: string;
   penelitian: string;
-  fotoUrl?: string;
+  fotoUrl?: string;       // URL lama
   updatedAt?: string;
 };
 
@@ -41,6 +41,7 @@ export default function ProfessorForm({ initial, onCancel, onSubmit }: Props) {
     "w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary-300 focus:ring-4 focus:ring-primary-100";
   const label = "block text-sm font-semibold text-slate-700 mb-1";
 
+  // handle pilih file baru
   function handleFile(file?: File | null) {
     if (!file) return;
     if (!file.type.startsWith("image/")) return;
@@ -49,8 +50,7 @@ export default function ProfessorForm({ initial, onCancel, onSubmit }: Props) {
 
     const reader = new FileReader();
     reader.onload = () => {
-      const result = String(reader.result || "");
-      setFotoUrl(result);
+      setFotoUrl(String(reader.result || ""));
     };
     reader.readAsDataURL(file);
   }
@@ -63,7 +63,7 @@ export default function ProfessorForm({ initial, onCancel, onSubmit }: Props) {
       fakultas,
       program_studi,
       penelitian,
-      fotoUrl: fotoUrl.trim() || undefined,
+      fotoUrl: fotoUrl || undefined,
       fotoFile,
     });
   }
@@ -101,72 +101,35 @@ export default function ProfessorForm({ initial, onCancel, onSubmit }: Props) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
+        {/* Nama, NIDN, Fakultas, Program Studi */}
         <div className="sm:col-span-2">
           <label className={label}>Nama Dosen</label>
-          <input
-            className={field}
-            value={nama_dosen}
-            onChange={(e) => setNamaDosen(e.target.value)}
-            placeholder="Nama lengkap dosen..."
-            required
-          />
+          <input className={field} value={nama_dosen} onChange={(e) => setNamaDosen(e.target.value)} placeholder="Nama lengkap dosen..." required />
         </div>
-
         <div className="sm:col-span-2">
           <label className={label}>NIDN</label>
-          <input
-            className={field}
-            value={nidn}
-            onChange={(e) => setNidn(e.target.value)}
-            placeholder="Nomor Induk Dosen Nasional..."
-            required
-          />
+          <input className={field} value={nidn} onChange={(e) => setNidn(e.target.value)} placeholder="Nomor Induk Dosen Nasional..." required />
         </div>
-
         <div className="sm:col-span-1">
           <label className={label}>Fakultas</label>
-          <input
-            className={field}
-            value={fakultas}
-            onChange={(e) => setFakultas(e.target.value)}
-            placeholder="Fakultas..."
-            required
-          />
+          <input className={field} value={fakultas} onChange={(e) => setFakultas(e.target.value)} placeholder="Fakultas..." required />
         </div>
-
         <div className="sm:col-span-1">
           <label className={label}>Program Studi</label>
-          <input
-            className={field}
-            value={program_studi}
-            onChange={(e) => setProgramStudi(e.target.value)}
-            placeholder="Program Studi..."
-            required
-          />
+          <input className={field} value={program_studi} onChange={(e) => setProgramStudi(e.target.value)} placeholder="Program Studi..." required />
         </div>
 
+        {/* Penelitian */}
         <div className="sm:col-span-2">
           <label className={label}>Penelitian</label>
-          <textarea
-            className={field + " h-40"}
-            value={penelitian}
-            onChange={(e) => setPenelitian(e.target.value)}
-            placeholder="Judul atau deskripsi penelitian..."
-          />
+          <textarea className={field + " h-40"} value={penelitian} onChange={(e) => setPenelitian(e.target.value)} placeholder="Judul atau deskripsi penelitian..." />
         </div>
 
-        {/* ✅ Upload Foto Dosen */}
+        {/* Foto */}
         <div className="sm:col-span-2">
           <label className={label}>Foto Dosen</label>
-
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <input
-              type="file"
-              accept="image/*"
-              className="block w-full text-sm"
-              onChange={(e) => handleFile(e.target.files?.[0])}
-            />
-
+            <input type="file" accept="image/*" className="block w-full text-sm" onChange={(e) => handleFile(e.target.files?.[0])} />
             {fotoUrl ? (
               <button
                 type="button"
@@ -183,13 +146,14 @@ export default function ProfessorForm({ initial, onCancel, onSubmit }: Props) {
 
           {fotoUrl ? (
             <div className="mt-3 overflow-hidden rounded-3xl border bg-slate-50">
-              <div className="aspect-[4/5] w-full">
+              <div className="aspect-[16/9] w-full">
                 <img src={fotoUrl} alt="Preview" className="h-full w-full object-cover" />
               </div>
             </div>
           ) : null}
         </div>
 
+        {/* Updated */}
         <div className="sm:col-span-1">
           <label className={label}>Updated</label>
           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700">

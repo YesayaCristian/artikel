@@ -16,7 +16,7 @@ export default function AdminStudyProgramsPage() {
     setLoading(true);
     try {
       const res = await fetchStudyPrograms();
-      setItems(res.study_programs ?? []);
+      setItems(res.program_studi ?? []);
     } catch (e: any) {
       setErr(e?.message ?? "Gagal load program studi");
     } finally {
@@ -79,7 +79,6 @@ export default function AdminStudyProgramsPage() {
                 <th className="text-left p-3">Akreditasi</th>
                 <th className="text-left p-3">Fakultas</th>
                 <th className="text-left p-3">Kaprodi</th>
-                <th className="text-left p-3">Created</th>
                 <th className="text-right p-3">Action</th>
               </tr>
             </thead>
@@ -91,15 +90,12 @@ export default function AdminStudyProgramsPage() {
                   <td className="p-3 text-black/70">{p.jenjang}</td>
                   <td className="p-3 text-black/70">{p.akreditasi}</td>
                   <td className="p-3 text-black/70">
-                    {p.nama_fakultas ?? "—"}
+                    {p.fakultas?.nama_fakultas ?? "—"}
                   </td>
                   <td className="p-3 text-black/70">{p.kaprodi}</td>
-                  <td className="p-3 text-black/70">
-                    {p.created_at ? new Date(p.created_at).toLocaleString() : "—"}
-                  </td>
                   <td className="p-3 text-right space-x-2">
                     <Link
-                      to={`/admin/study-programs/edit/${p.id}`}
+                      to={`/admin/study_program/edit/${p.id}`}
                       className="px-3 py-1 rounded-lg border text-blue-700 hover:bg-blue-50"
                     >
                       Edit

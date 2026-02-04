@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ArticleForm, { type ArticleFormValues, type ArticleFormInitial } from "../../../components/articles/ArticleForm";
 import { useToast } from "../../../components/ui/toast/ToastProvider";
 import { fetchTags, getAdminArticle, updateAdminArticle, type ApiTag } from "../../../services/adminArticle";
+import { resolveMediaUrl } from "../../../lib/media";
 
 function slugifyLite(text: string) {
   return (text || "")
@@ -46,8 +47,7 @@ export default function EditArticlePage() {
           content: a.konten,
           categoryId: a.category?.id ?? null,
           tags: (a.tags ?? []).map((x) => x.name),
-          thumbnailUrl: "",
-          updatedAt: a.created_at,
+          thumbnailUrl: resolveMediaUrl(a.images?.[0]),
         });
       } catch {
         setInitial(null);

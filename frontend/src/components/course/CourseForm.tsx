@@ -53,7 +53,7 @@ export default function CourseForm({ initial, onCancel, onSubmit }: Props) {
   useEffect(() => {
     (async () => {
       const res = await fetchStudyPrograms();
-      setProdi(res.study_programs ?? []);
+      setProdi(res.program_studi ?? []);
     })();
   }, []);
 

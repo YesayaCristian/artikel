@@ -14,8 +14,7 @@ export async function fetchFaculties(): Promise<{ fakultas: ApiFaculty[] }> {
 }
 
 export async function getAdminFaculty(id: number): Promise<ApiFaculty> {
-  const res = await http<{ faculty: ApiFaculty }>(`/api/fakultas/${id}/`);
-  return res.faculty;
+  return http<ApiFaculty>(`/api/fakultas/${id}/`);
 }
 
 export async function createAdminFaculty(data: {
@@ -42,13 +41,13 @@ export async function updateAdminFaculty(
     website: string;
   }
 ): Promise<any> {
-  return http<any>(`/api/fakultas/${id}/update/`, {
-    method: "POST",
+  return http<any>(`/api/fakultas/update/${id}/`, {
+    method: "PUT",
     body: JSON.stringify(data),
 
   });
 }
 
 export async function deleteAdminFaculty(id: number) {
-  return http(`/api/fakultas/${id}/delete/`, { method: "DELETE" });
+  return http(`/api/fakultas/delete/${id}/`, { method: "DELETE" });
 }

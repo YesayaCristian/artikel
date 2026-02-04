@@ -17,7 +17,7 @@ export default function CreateStudyProgramPage() {
       </div>
 
       <StudyProgramForm
-        onCancel={() => nav("/admin/study-programs")}
+        onCancel={() => nav("/admin/study_program")}
         onSubmit={async (values: StudyProgramFormValues) => {
           try {
             await createAdminStudyProgram({
@@ -35,7 +35,7 @@ export default function CreateStudyProgramPage() {
               message: "Data program studi berhasil ditambahkan.",
             });
 
-            nav("/admin/study-programs");
+            nav("/admin/study_program");
           } catch (e: any) {
             toast({
               type: "error",

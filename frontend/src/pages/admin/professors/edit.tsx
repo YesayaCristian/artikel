@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ProfessorForm, { type ProfessorFormValues, type ProfessorFormInitial } from "../../../components/professors/ProfessorForm";
 import { useToast } from "../../../components/ui/toast/ToastProvider";
 import { getAdminProfessor, updateAdminProfessor } from "../../../services/adminProfessor";
+import { resolveMediaUrl } from "../../../lib/media";
 
 export default function EditProfessorPage() {
   const nav = useNavigate();
@@ -15,12 +16,14 @@ export default function EditProfessorPage() {
   const [loading, setLoading] = useState(true);
   const [initial, setInitial] = useState<ProfessorFormInitial | null>(null);
 
+  // fetch data dosen
   useEffect(() => {
     if (!validId) return;
 
     (async () => {
       try {
         const p = await getAdminProfessor(professorId);
+
         setInitial({
           id: p.id,
           nama_dosen: p.nama_dosen,
@@ -28,7 +31,7 @@ export default function EditProfessorPage() {
           fakultas: p.fakultas,
           program_studi: p.program_studi,
           penelitian: p.penelitian,
-          fotoUrl: p.foto_url ?? "",
+          fotoUrl: p.foto_dosen ? resolveMediaUrl(p.foto_dosen) : "",
         });
       } catch {
         setInitial(null);
@@ -81,7 +84,7 @@ export default function EditProfessorPage() {
               fakultas: values.fakultas,
               program_studi: values.program_studi,
               penelitian: values.penelitian,
-              foto: values.fotoFile ? [values.fotoFile] : undefined,
+              foto: values.fotoFile ? [values.fotoFile] : undefined, // hanya kirim file baru
             });
 
             toast({ type: "success", title: "Updated", message: "Data dosen berhasil diupdate." });

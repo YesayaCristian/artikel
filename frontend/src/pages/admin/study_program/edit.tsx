@@ -30,7 +30,7 @@ export default function EditStudyProgramPage() {
           nama_prodi: p.nama_prodi,
           jenjang: p.jenjang,
           akreditasi: p.akreditasi,
-          id_fakultas: p.id_fakultas,
+          id_fakultas: p.fakultas.id,
           kaprodi: p.kaprodi,
         });
       } catch {
@@ -47,7 +47,7 @@ export default function EditStudyProgramPage() {
         <h1 className="text-xl font-semibold mb-2">Invalid ID</h1>
         <button
           className="px-4 py-2 rounded-lg border"
-          onClick={() => nav("/admin/study-programs")}
+          onClick={() => nav("/admin/study_program")}
         >
           Back
         </button>
@@ -64,7 +64,7 @@ export default function EditStudyProgramPage() {
         <p className="text-gray-600 mb-4">Mungkin sudah dihapus atau ID salah.</p>
         <button
           className="px-4 py-2 rounded-lg border"
-          onClick={() => nav("/admin/study-programs")}
+          onClick={() => nav("/admin/study_program")}
         >
           Back to Program Studi
         </button>
@@ -81,7 +81,7 @@ export default function EditStudyProgramPage() {
 
       <StudyProgramForm
         initial={initial}
-        onCancel={() => nav("/admin/study-programs")}
+        onCancel={() => nav("/admin/study_program")}
         onSubmit={async (values: StudyProgramFormValues) => {
           try {
             await updateAdminStudyProgram(studyProgramId, {
@@ -99,7 +99,7 @@ export default function EditStudyProgramPage() {
               message: "Data program studi berhasil diupdate.",
             });
 
-            nav("/admin/study-programs");
+            nav("/admin/study_program");
           } catch (e: any) {
             toast({
               type: "error",

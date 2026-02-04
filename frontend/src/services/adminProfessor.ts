@@ -18,8 +18,10 @@ export async function fetchProfessors(): Promise<{ dosens: ApiProfessor[] }> {
 
 // ✅ Ambil detail dosen by ID
 export async function getAdminProfessor(id: number): Promise<ApiProfessor> {
-  return http<ApiProfessor>(`/api/dosen/${id}/`);
+  const res = await http<{ dosen: ApiProfessor }>(`/api/dosen/${id}/`);
+  return res.dosen;
 }
+
 
 // ✅ Create dosen baru
 export async function createAdminProfessor(data: {
