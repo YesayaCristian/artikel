@@ -382,7 +382,7 @@ def create_dosen(request):
             nidn=request.data.get("nidn"),
             fakultas=request.data.get("fakultas"),
             program_studi=request.data.get("program_studi"),
-            penelitian=parse_bool(request.data.get("penelitian")),
+            penelitian=request.data.get("penelitian"),
             foto_dosen=request.FILES.get("foto_dosen"),
         )
         return Response({"message": "Dosen berhasil ditambahkan", "dosen": serialize_dosen(dosen)}, status=status.HTTP_201_CREATED)
@@ -405,7 +405,7 @@ def update_dosen(request, id):
     dosen.program_studi = request.data.get("program_studi", dosen.program_studi)
 
     if "penelitian" in request.data:
-        dosen.penelitian = parse_bool(request.data.get("penelitian"))
+        dosen.penelitian = request.data.get("penelitian")
 
     foto = request.FILES.get("foto_dosen")
     if foto:
