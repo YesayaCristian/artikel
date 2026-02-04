@@ -41,10 +41,6 @@ export default function AdminLayout() {
             <div className="rounded-3xl border bg-white p-4 sm:p-6 shadow-soft">
               <Outlet />
             </div>
-
-            <footer className="mt-6 text-center text-xs text-slate-500">
-              © {new Date().getFullYear()} Artikel Admin • White & Blue UI
-            </footer>
           </main>
         </div>
       </div>

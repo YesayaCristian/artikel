@@ -48,7 +48,6 @@ function mapApiToUi(a: ApiArticle): Article {
   };
 }
 
-// ✅ dipakai ArticlesPage + LandingPage
 export async function listPublishedArticles(): Promise<Article[]> {
   const res = await fetch(`${BASE}/api/articles/`, {
     headers: { Accept: "application/json" },

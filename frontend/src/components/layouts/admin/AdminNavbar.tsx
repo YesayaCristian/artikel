@@ -32,14 +32,6 @@ export default function AdminNavbar({ pageTitle, onOpenSidebar, onLogout }: Prop
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-2 rounded-2xl border bg-white px-3 py-2 shadow-sm">
-              <span className="text-slate-400">⌕</span>
-              <input
-                className="w-56 bg-transparent text-sm outline-none placeholder:text-slate-400"
-                placeholder="Search (coming soon)"
-              />
-            </div>
-
             <button
               onClick={onLogout}
               className="rounded-2xl border bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
