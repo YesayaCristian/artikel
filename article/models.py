@@ -72,7 +72,7 @@ class Dosen(models.Model):
     nidn = models.CharField(max_length=20)
     fakultas = models.CharField(max_length=100)
     program_studi = models.CharField(max_length=100)
-    penelitian = models.BooleanField(default=False)
+    penelitian = models.TextField(max_length=255)
     foto_dosen = models.ImageField(upload_to='dosen/')
 
     created_at = models.DateTimeField(auto_now_add=True)
