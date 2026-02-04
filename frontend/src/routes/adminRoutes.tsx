@@ -56,12 +56,14 @@ const adminRoutes: RouteObject[] = [
           {path : "professors/edit/:id", element: <EditProfessorPage />},
 
           {path : "faculties", element: <AdminFacultiesPage/>},
-          {path : "faculties:create", element: <CreateFacultyPage/>},
+          {path : "faculties/create", element: <CreateFacultyPage/>},
           {path : "faculties/edit/:id", element: <EditFacultyPage/>},
 
           { path: "categories", element: <CategoriesPage /> },
           { path: "tags", element: <TagsPage /> },
 
+
+          
           
 
           { path: "*", element: <Navigate to="dashboard" replace /> },

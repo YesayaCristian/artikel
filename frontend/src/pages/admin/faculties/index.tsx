@@ -12,7 +12,7 @@ export default function AdminFacultiesPage() {
     setLoading(true);
     try {
       const res = await fetchFaculties();
-      setItems(res.faculties ?? []);
+      setItems(res.fakultas ?? []);
     } catch (e: any) {
       setErr(e?.message ?? "Gagal load fakultas");
     } finally {

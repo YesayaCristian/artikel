@@ -12,30 +12,30 @@ from .views import (
 
 urlpatterns = [
     # articles
-    path("articles/", list_article),
-    path("articles/create/", create_article),
-    path("articles/<int:id>/", detail_article),
-    path("articles/<int:id>/update/", update_article),
-    path("articles/<int:id>/delete/", delete_article),
+    path("api/articles/", list_article),
+    path("api/articles/create/", create_article),
+    path("api/articles/<int:id>/", detail_article),
+    path("api/articles/<int:id>/update/", update_article),
+    path("api/articles/<int:id>/delete/", delete_article),
 
     # categories
-    path("categories/", list_categories),
-    path("categories/create/", create_category),
-    path("categories/<int:id>/update/", update_category),
-    path("categories/<int:id>/delete/", delete_category),
+    path("api/categories/", list_categories),
+    path("api/categories/create/", create_category),
+    path("api/categories/<int:id>/update/", update_category),
+    path("api/categories/<int:id>/delete/", delete_category),
 
     # tags
-    path("tags/", list_tags),
-    path("tags/create/", create_tag),
-    path("tags/<int:id>/update/", update_tag),
-    path("tags/<int:id>/delete/", delete_tag),
+    path("api/tags/", list_tags),
+    path("api/tags/create/", create_tag),
+    path("api/tags/<int:id>/update/", update_tag),
+    path("api/tags/<int:id>/delete/", delete_tag),
 
     # dosen (PUBLIC)
-    path("dosen/list/", list_dosen),
-    path("dosen/<int:id>/", detail_dosen),
+    path("api/dosen/list/", list_dosen),
+    path("api/dosen/<int:id>/", detail_dosen),
 
     # dosen (ADMIN)
-    path("dosen/create/", create_dosen),
-    path("dosen/<int:id>/update/", update_dosen),
-    path("dosen/<int:id>/delete/", delete_dosen),
+    path("api/dosen/create/", create_dosen),
+    path("api/dosen/<int:id>/update/", update_dosen),
+    path("api/dosen/<int:id>/delete/", delete_dosen),
 ]

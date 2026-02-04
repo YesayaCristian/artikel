@@ -9,8 +9,8 @@ export type ApiFaculty = {
   website: string;
 };
 
-export async function fetchFaculties(): Promise<{ faculties: ApiFaculty[] }> {
-  return http<{ faculties: ApiFaculty[] }>("/api/fakultas/list/");
+export async function fetchFaculties(): Promise<{ fakultas: ApiFaculty[] }> {
+  return http<{ fakultas: ApiFaculty[] }>("/api/fakultas/");
 }
 
 export async function getAdminFaculty(id: number): Promise<ApiFaculty> {
@@ -25,10 +25,11 @@ export async function createAdminFaculty(data: {
   gedung: string;
   website: string;
 }): Promise<any> {
-//   return http<any>("/api/fakultas/create/", {
-//     method: "POST",
-//     body: formData,
-//   });
+  return http<any>("/api/fakultas/create/", {
+    method: "POST",
+    body: JSON.stringify(data),
+
+  });
 }
 
 export async function updateAdminFaculty(
@@ -41,10 +42,11 @@ export async function updateAdminFaculty(
     website: string;
   }
 ): Promise<any> {
-//   return http<any>(`/api/fakultas/${id}/update/`, {
-//     method: "POST",
-//     body: formData,
-//   });
+  return http<any>(`/api/fakultas/${id}/update/`, {
+    method: "POST",
+    body: JSON.stringify(data),
+
+  });
 }
 
 export async function deleteAdminFaculty(id: number) {
