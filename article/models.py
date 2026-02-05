@@ -24,6 +24,3 @@ class ArticleImage(models.Model):
         on_delete=models.CASCADE
     )
     image = models.ImageField(upload_to="artikel/")
-
-
-
