@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchStudyPrograms } from "../../services/adminStudyProgram";
 
 export type Prodi = {
@@ -70,10 +70,6 @@ export default function CourseForm({ initial, onCancel, onSubmit }: Props) {
     });
   }
 
-  const updatedText = useMemo(() => {
-    if (!initial?.updatedAt) return "—";
-    return new Date(initial.updatedAt).toLocaleString();
-  }, [initial?.updatedAt]);
 
   return (
     <form onSubmit={submit} className="space-y-5">
