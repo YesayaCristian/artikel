@@ -10,10 +10,10 @@ export default function EditCoursePage() {
   const [initial, setInitial] = useState<CourseFormInitial | null>(null);
 
   useEffect(() => {
-    (async () => {
-      const c = await getAdminCourse(Number(id));
+    ( async () => {
+      const c = await getAdminCourse(id!);
       setInitial({
-        id: c.id,
+        id_mk : c.id_mk,
         kode_mk: c.kode_mk,
         nama_mk: c.nama_mk,
         sks: c.sks,
@@ -30,10 +30,10 @@ export default function EditCoursePage() {
   return (
     <CourseForm
       initial={initial}
-      onCancel={() => nav("/admin/mata-kuliah")}
+      onCancel={() => nav("/admin/course")}
       onSubmit={async (v: CourseFormValues) => {
-        await updateAdminCourse(Number(id), v);
-        nav("/admin/mata-kuliah");
+        await updateAdminCourse(id!, v); // paksa jadi string
+        nav("/admin/course");
       }}
     />
   );

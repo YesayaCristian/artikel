@@ -28,13 +28,13 @@ export default function AdminCoursesPage() {
     load();
   }, []);
 
-  async function onDelete(id: number) {
+  async function onDelete(id: string) {
     const ok = window.confirm("Hapus data mata kuliah ini?");
     if (!ok) return;
 
     try {
       await deleteAdminCourse(id);
-      setItems((prev) => prev.filter((x) => x.id !== id));
+      setItems((prev) => prev.filter((x) => x.id_mk !== id));
     } catch (e: any) {
       alert(e?.message ?? "Gagal hapus");
     }
@@ -79,13 +79,12 @@ export default function AdminCoursesPage() {
                 <th className="text-left p-3">Semester</th>
                 <th className="text-left p-3">Jenis</th>
                 <th className="text-left p-3">Program Studi</th>
-                <th className="text-left p-3">Created</th>
                 <th className="text-right p-3">Action</th>
               </tr>
             </thead>
             <tbody>
               {items.map((m) => (
-                <tr key={m.id} className="border-t">
+                <tr key={m.id_mk} className="border-t">
                   <td className="p-3 font-semibold text-black">
                     {m.kode_mk}
                   </td>
@@ -98,20 +97,15 @@ export default function AdminCoursesPage() {
                   <td className="p-3 text-black/70">
                     {m.nama_prodi ?? "—"}
                   </td>
-                  <td className="p-3 text-black/70">
-                    {m.created_at
-                      ? new Date(m.created_at).toLocaleString()
-                      : "—"}
-                  </td>
                   <td className="p-3 text-right space-x-2">
                     <Link
-                      to={`/admin/course/edit/${m.id}`}
+                      to={`/admin/course/edit/${m.id_mk}`}
                       className="px-3 py-1 rounded-lg border text-blue-700 hover:bg-blue-50"
                     >
                       Edit
                     </Link>
                     <button
-                      onClick={() => onDelete(m.id)}
+                      onClick={() => onDelete(m.id_mk)}
                       className="px-3 py-1 rounded-lg border text-red-700 hover:bg-red-50"
                       type="button"
                     >

@@ -17,7 +17,7 @@ export type CourseFormValues = {
 };
 
 export type CourseFormInitial = {
-  id?: number;
+  id_mk?: string;
   kode_mk: string;
   nama_mk: string;
   sks: number;
@@ -148,13 +148,6 @@ export default function CourseForm({ initial, onCancel, onSubmit }: Props) {
         <div className="sm:col-span-2">
           <label className={label}>Deskripsi</label>
           <textarea className={field + " h-32"} value={deskripsi} onChange={(e) => setDeskripsi(e.target.value)} />
-        </div>
-
-        <div>
-          <label className={label}>Updated</label>
-          <div className="bg-slate-50 border rounded-xl px-3 py-2 text-sm">
-            {initial ? updatedText : "—"}
-          </div>
         </div>
       </div>
     </form>
