@@ -51,7 +51,7 @@ export default function AdminLayout() {
           </div>
 
           <footer className="mt-6 text-center text-xs text-slate-500">
-            © {new Date().getFullYear()} Artikel Admin • Institut Teknologi Bandung
+            © {new Date().getFullYear()} Artikel Admin • Institut Teknologi
           </footer>
         </main>
       </div>
