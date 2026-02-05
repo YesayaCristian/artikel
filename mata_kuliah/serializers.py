@@ -9,7 +9,11 @@ class ProdiSerializer(serializers.ModelSerializer):
 
 
 class MataKuliahSerializer(serializers.ModelSerializer):
-    prodi_nama = serializers.CharField(source="prodi.nama_prodi", read_only=True)
+    nama_prodi = serializers.CharField(source="prodi.nama_prodi", read_only=True)
+    id_prodi = serializers.PrimaryKeyRelatedField(
+        queryset=ProgramStudi.objects.all(),
+        source="prodi"   # mapping ke ForeignKey
+    )
 
     class Meta:
         model = MataKuliah
@@ -20,7 +24,7 @@ class MataKuliahSerializer(serializers.ModelSerializer):
             "sks",
             "semester",
             "jenis_mk",
-            "prodi",
-            "prodi_nama",
             "deskripsi",
+            "id_prodi",     # bisa diinput saat create/update
+            "nama_prodi",   # hanya tampil di output
         ]

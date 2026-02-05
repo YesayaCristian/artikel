@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { cn } from "../../../lib/cn";
+import { useState } from "react";
 
 type Props = {
   onNavigate?: () => void;
@@ -17,48 +18,99 @@ export default function AdminNavLinks({ onNavigate }: Props) {
         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
     );
 
+  // state dropdown
+  const [openArticles, setOpenArticles] = useState(false);
+  const [openFaculties, setOpenFaculties] = useState(false);
+
   return (
     <nav className="space-y-1">
-      <NavLink to="/admin" end className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
+      <NavLink
+        to="/admin"
+        end
+        className={({ isActive }) => getClass(isActive)}
+        onClick={onNavigate}
+      >
         <span className="text-lg">🏠</span>
         Dashboard
       </NavLink>
 
-      <NavLink to="/admin/articles" className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
+      {/* Articles dropdown */}
+      <button
+        onClick={() => setOpenArticles(!openArticles)}
+        className={cn(base, "w-full text-left")}
+      >
         <span className="text-lg">📝</span>
-        Articles
+        Articles {openArticles ? "▼" : "▶"}
+      </button>
+      {openArticles && (
+        <div className="ml-6 space-y-1">
+          <NavLink
+            to="/admin/articles"
+            className={({ isActive }) => getClass(isActive)}
+            onClick={onNavigate}
+          >
+            All Articles
+          </NavLink>
+          <NavLink
+            to="/admin/categories"
+            className={({ isActive }) => getClass(isActive)}
+            onClick={onNavigate}
+          >
+            Categories
+          </NavLink>
+          <NavLink
+            to="/admin/tags"
+            className={({ isActive }) => getClass(isActive)}
+            onClick={onNavigate}
+          >
+            Tags
+          </NavLink>
+        </div>
+      )}
+
+      {/* Professors */}
+      <NavLink
+        to="/admin/professors"
+        className={({ isActive }) => getClass(isActive)}
+        onClick={onNavigate}
+      >
+        <span className="text-lg">👨‍🏫</span>
+        Dosen
       </NavLink>
 
-      <NavLink to="/admin/professors" className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
+      {/* Faculties dropdown */}
+      <button
+        onClick={() => setOpenFaculties(!openFaculties)}
+        className={cn(base, "w-full text-left")}
+      >
         <span className="text-lg">🏫</span>
-        Professors
-      </NavLink>
-
-      <NavLink to="/admin/study_program" className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
-        <span className="text-lg">🏫</span>
-        Study Programs
-      </NavLink>
-
-      <NavLink to="/admin/course" className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
-        <span className="text-lg">🏫</span>
-        Course
-      </NavLink>
-
-      <NavLink to="/admin/faculties" className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
-        <span className="text-lg">🏫</span>
-        Faculties
-      </NavLink>
-
-      {/* ✅ NEW */}
-      <NavLink to="/admin/categories" className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
-        <span className="text-lg">🏷️</span>
-        Categories
-      </NavLink>
-
-      <NavLink to="/admin/tags" className={({ isActive }) => getClass(isActive)} onClick={onNavigate}>
-        <span className="text-lg">#️⃣</span>
-        Tags
-      </NavLink>
+        Fakultas {openFaculties ? "▼" : "▶"}
+      </button>
+      {openFaculties && (
+        <div className="ml-6 space-y-1">
+          <NavLink
+            to="/admin/faculties"
+            className={({ isActive }) => getClass(isActive)}
+            onClick={onNavigate}
+          >
+            Faculties
+          </NavLink>
+          <NavLink
+            to="/admin/course"
+            className={({ isActive }) => getClass(isActive)}
+            onClick={onNavigate}
+          >
+            Matkul
+          </NavLink>
+          <NavLink
+            to="/admin/study_program"
+            className={({ isActive }) => getClass(isActive)}
+            onClick={onNavigate}
+          >
+            Prodi
+          </NavLink>
+        </div>
+      )}
     </nav>
   );
 }

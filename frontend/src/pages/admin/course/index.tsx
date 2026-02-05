@@ -79,6 +79,7 @@ export default function AdminCoursesPage() {
                 <th className="text-left p-3">Semester</th>
                 <th className="text-left p-3">Jenis</th>
                 <th className="text-left p-3">Program Studi</th>
+                <th className="text-left p-3">Deskripsi</th>
                 <th className="text-right p-3">Action</th>
               </tr>
             </thead>
@@ -97,6 +98,7 @@ export default function AdminCoursesPage() {
                   <td className="p-3 text-black/70">
                     {m.nama_prodi ?? "—"}
                   </td>
+                  <td className="p-3 text-black/70">{m.deskripsi}</td>
                   <td className="p-3 text-right space-x-2">
                     <Link
                       to={`/admin/course/edit/${m.id_mk}`}

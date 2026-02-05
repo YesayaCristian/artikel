@@ -6,10 +6,6 @@ from rest_framework import status
 from .models import MataKuliah
 from .serializers import MataKuliahSerializer
 
-
-# =========================
-# CREATE MATA KULIAH
-# =========================
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def create_mk(request):
@@ -19,21 +15,14 @@ def create_mk(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# =========================
-# LIST MATA KULIAH
-# =========================
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def list_mk(request):
     queryset = MataKuliah.objects.select_related("prodi").all()
     serializer = MataKuliahSerializer(queryset, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response({"mata_kuliah": serializer.data}, status=status.HTTP_200_OK)
 
 
-# =========================
-# DETAIL MATA KULIAH
-# =========================
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def detail_mk(request, id):
@@ -48,10 +37,6 @@ def detail_mk(request, id):
     serializer = MataKuliahSerializer(mk)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-# =========================
-# UPDATE MATA KULIAH
-# =========================
 @api_view(["PUT"])
 @permission_classes([IsAuthenticated])
 def update_mk(request, id):
@@ -70,10 +55,6 @@ def update_mk(request, id):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# =========================
-# DELETE MATA KULIAH
-# =========================
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
 def delete_mk(request, id):

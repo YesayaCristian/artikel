@@ -5,9 +5,9 @@ from program_studi.models import ProgramStudi
 
 class MataKuliah(models.Model):
     JENIS_CHOICES = [
-        ("Wajib", "Wajib"),
-        ("Pilihan", "Pilihan"),
-        ("Praktikum", "Praktikum"),
+        ("wajib", "Wajib"),
+        ("pilihan", "Pilihan"),
+        ("praktikum", "Praktikum"),
     ]
 
     id_mk = models.UUIDField(
