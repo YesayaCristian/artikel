@@ -4,11 +4,10 @@ from .views import (
 )
 
 urlpatterns = [
-
-    # MATA KULIAH
     path("api/mk/create/", create_mk),
     path("api/mk/", list_mk),
-    path("api/mk/<uuid:id>/", detail_mk),
-    path("api/mk/<uuid:id>/update/", update_mk),
-    path("api/mk/<uuid:id>/delete/", delete_mk),
+    path("api/mk/<int:id>/", detail_mk),
+    path("api/mk/<int:id>/update/", update_mk),
+    path("api/mk/<int:id>/delete/", delete_mk),
 ]
+

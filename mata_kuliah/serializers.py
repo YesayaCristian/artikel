@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import MataKuliah, ProgramStudi
+from .models import MataKuliah
+from program_studi.models import ProgramStudi
 
 
 class ProdiSerializer(serializers.ModelSerializer):
@@ -9,12 +10,15 @@ class ProdiSerializer(serializers.ModelSerializer):
 
 
 class MataKuliahSerializer(serializers.ModelSerializer):
-    prodi_nama = serializers.CharField(source="prodi.nama_prodi", read_only=True)
+    prodi_nama = serializers.CharField(
+        source="prodi.nama_prodi",
+        read_only=True
+    )
 
     class Meta:
         model = MataKuliah
         fields = [
-            "id_mk",
+            "id",
             "kode_mk",
             "nama_mk",
             "sks",
@@ -23,4 +27,9 @@ class MataKuliahSerializer(serializers.ModelSerializer):
             "prodi",
             "prodi_nama",
             "deskripsi",
+            "bahan_kajian",
+            "cpps",
+            "cpm",
+            "daftar_rujukan",
+            "instrumen_penilaian",
         ]
