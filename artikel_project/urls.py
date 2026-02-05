@@ -11,6 +11,8 @@ urlpatterns = [
     path('', include('program_studi.urls')),
 
     path('', include('article.urls')),
+    path('', include('mata_kuliah.urls')),
+
 ]
 
 if settings.DEBUG:

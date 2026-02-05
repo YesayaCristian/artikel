@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django_extensions",
     'fakultas',
     'program_studi',
+    'mata_kuliah',
 ]
 
 MIDDLEWARE = [
