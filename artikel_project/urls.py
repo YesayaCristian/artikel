@@ -11,6 +11,7 @@ urlpatterns = [
     path('api/program_studi/', include('program_studi.urls')),
     path('', include('article.urls')),
     path('', include('mata_kuliah.urls')),
+    path('', include('dosen.urls')),
 
 ]
 
