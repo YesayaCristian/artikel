@@ -67,27 +67,34 @@ export default function AdminProfessorsPage() {
           <table className="w-full text-sm">
             <thead className="bg-blue-50 text-black">
               <tr>
-                <th className="text-left p-3">Nama Dosen</th>
-                <th className="text-left p-3">NIDN</th>
-                <th className="text-left p-3">Fakultas</th>
-                <th className="text-left p-3">Program Studi</th>
-                <th className="text-left p-3">Penelitian</th>
-                <th className="text-left p-3">Created</th>
-                <th className="text-right p-3">Action</th>
+                <th className="p-3 text-left">Nama Dosen</th>
+                <th className="p-3 text-left">NIDN</th>
+                <th className="p-3 text-left">Email</th>
+                <th className="p-3 text-left">Fakultas</th>
+                <th className="p-3 text-left">Program Studi</th>
+                <th className="p-3 text-left">Penelitian</th>
+                <th className="p-3 text-left">Webpage</th>
+                <th className="p-3 text-right" >Action</th>
               </tr>
             </thead>
             <tbody>
               {items.map((d) => (
                 <tr key={d.id} className="border-t">
-                  <td className="p-3 text-black font-semibold">{d.nama_dosen}</td>
-                  <td className="p-3 text-black/70">{d.nidn}</td>
-                  <td className="p-3 text-black/70">{d.fakultas}</td>
-                  <td className="p-3 text-black/70">{d.program_studi}</td>
-                  <td className="p-3 text-black/70">{d.penelitian}</td>
-                  <td className="p-3 text-black/70">
-                   {d.created_at ? new Date(d.created_at).toLocaleString() : "—"}
-                  </td>
+                  <td className="p-3">{d.nama_dosen}</td>
+                  <td className="p-3">{d.nidn}</td>
+                  <td className="p-3">{d.email}</td>
+                  <td className="p-3">{d.fakultas}</td>
+                  <td className="p-3">{d.program_studi}</td>
+                  <td className="p-3">{d.penelitian}</td>
+                  <td className="p-3">{d.webpage}</td>
                   <td className="p-3 text-right space-x-2">
+                    <Link
+                      to={`/admin/professors/detail/${d.id}`}
+                      className="px-3 py-1 rounded-lg border text-green-700 hover:bg-green-50"
+                    >
+                      Detail
+                    </Link>
+
                     <Link
                       to={`/admin/professors/edit/${d.id}`}
                       className="px-3 py-1 rounded-lg border text-blue-700 hover:bg-blue-50"

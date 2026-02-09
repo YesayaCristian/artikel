@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import MataKuliah, ProgramStudi
+from .models import MataKuliah
+from program_studi.models import ProgramStudi
 
 
 class ProdiSerializer(serializers.ModelSerializer):
@@ -18,7 +19,7 @@ class MataKuliahSerializer(serializers.ModelSerializer):
     class Meta:
         model = MataKuliah
         fields = [
-            "id_mk",
+            "id",
             "kode_mk",
             "nama_mk",
             "sks",
@@ -27,4 +28,9 @@ class MataKuliahSerializer(serializers.ModelSerializer):
             "deskripsi",
             "id_prodi",     # bisa diinput saat create/update
             "nama_prodi",   # hanya tampil di output
+            "bahan_kajian",
+            "cpps",
+            "cpm",
+            "daftar_rujukan",
+            "instrumen_penilaian",
         ]

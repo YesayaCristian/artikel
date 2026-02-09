@@ -1,7 +1,7 @@
 import { http } from "../lib/http";
 
 export type ApiCourse = {
-  id_mk: string;   // UUID string dari backend
+  id: string;   // UUID string dari backend
   kode_mk: string;
   nama_mk: string;
   sks: number;
@@ -10,6 +10,11 @@ export type ApiCourse = {
   id_prodi: number;
   nama_prodi?: string;
   deskripsi: string;
+  bahan_kajian?: string;
+  cpps?: string;
+  cpm?: string;
+  daftar_rujukan?: string;
+  instrumen_penilaian?: string;
   created_at: string;
 };
 
@@ -29,6 +34,11 @@ export async function createAdminCourse(data: {
   jenis_mk: "wajib" | "pilihan" | "praktikum";
   id_prodi: number;
   deskripsi: string;
+  bahan_kajian?: string;
+  cpps?: string;
+  cpm?: string;
+  daftar_rujukan?: string;
+  instrumen_penilaian?: string;
 }) {
   return http("/api/mk/create/", {
     method: "POST",
@@ -46,6 +56,11 @@ export async function updateAdminCourse(
     jenis_mk: "wajib" | "pilihan" | "praktikum";
     id_prodi: number;
     deskripsi: string;
+    bahan_kajian?: string;
+    cpps?: string;
+    cpm?: string;
+    daftar_rujukan?: string;
+    instrumen_penilaian?: string;
   }
 ) {
   return http(`/api/mk/${id}/update/`, {

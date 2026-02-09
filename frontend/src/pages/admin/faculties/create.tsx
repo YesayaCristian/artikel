@@ -18,13 +18,7 @@ export default function CreateFacultyPage() {
         onCancel={() => nav("/admin/faculties")}
         onSubmit={async (values: FacultyFormValues) => {
           try {
-            await createAdminFaculty({
-              kode_fakultas: values.kode_fakultas,
-              nama_fakultas: values.nama_fakultas,
-              nama_dekan: values.nama_dekan,
-              gedung: values.gedung,
-              website: values.website,
-            });
+            await createAdminFaculty(values);
 
             toast({ type: "success", title: "Created", message: "Fakultas berhasil dibuat." });
             nav("/admin/faculties");

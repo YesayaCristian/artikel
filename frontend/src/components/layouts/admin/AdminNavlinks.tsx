@@ -30,7 +30,6 @@ export default function AdminNavLinks({ onNavigate }: Props) {
         className={({ isActive }) => getClass(isActive)}
         onClick={onNavigate}
       >
-        <span className="text-lg">🏠</span>
         Dashboard
       </NavLink>
 
@@ -39,7 +38,6 @@ export default function AdminNavLinks({ onNavigate }: Props) {
         onClick={() => setOpenArticles(!openArticles)}
         className={cn(base, "w-full text-left")}
       >
-        <span className="text-lg">📝</span>
         Articles {openArticles ? "▼" : "▶"}
       </button>
       {openArticles && (
@@ -74,7 +72,6 @@ export default function AdminNavLinks({ onNavigate }: Props) {
         className={({ isActive }) => getClass(isActive)}
         onClick={onNavigate}
       >
-        <span className="text-lg">👨‍🏫</span>
         Dosen
       </NavLink>
 
@@ -83,7 +80,6 @@ export default function AdminNavLinks({ onNavigate }: Props) {
         onClick={() => setOpenFaculties(!openFaculties)}
         className={cn(base, "w-full text-left")}
       >
-        <span className="text-lg">🏫</span>
         Fakultas {openFaculties ? "▼" : "▶"}
       </button>
       {openFaculties && (

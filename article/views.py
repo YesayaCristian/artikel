@@ -8,7 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Article, ArticleImage, Category, Tag, Dosen
+from .models import Article, ArticleImage, Category, Tag
 
 
 # ---------- Helpers ----------
@@ -87,17 +87,17 @@ def serialize_article(article: Article):
     }
 
 
-def serialize_dosen(d: Dosen):
-    return {
-        "id": d.id,
-        "nama_dosen": d.nama_dosen,
-        "nidn": d.nidn,
-        "fakultas": d.fakultas,
-        "program_studi": d.program_studi,
-        "penelitian": d.penelitian,
-        "foto_dosen": d.foto_dosen.url if d.foto_dosen else None,
-        "created_at": getattr(d, "created_at", None),
-    }
+# def serialize_dosen(d: Dosen):
+#     return {
+#         "id": d.id,
+#         "nama_dosen": d.nama_dosen,
+#         "nidn": d.nidn,
+#         "fakultas": d.fakultas,
+#         "program_studi": d.program_studi,
+#         "penelitian": d.penelitian,
+#         "foto_dosen": d.foto_dosen.url if d.foto_dosen else None,
+#         "created_at": getattr(d, "created_at", None),
+#     }
 
 
 # ===================== CATEGORIES =====================
@@ -239,7 +239,10 @@ def create_article(request):
     tag_ids = parse_int_list_from_request(request, "tag_ids")  # optional
 
     if not judul or not konten:
-        return Response({"error": "judul dan konten wajib diisi"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "judul dan konten wajib diisi"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     category_obj = None
     if category_id:
@@ -341,74 +344,74 @@ def delete_article(request, id):
     return Response({"message": "Artikel berhasil dihapus"}, status=status.HTTP_200_OK)
 
 
-# ===================== DOSEN =====================
-# Public READ
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def list_dosen(request):
-    dosens = Dosen.objects.all().order_by("-created_at")
-    return Response({"dosens": [serialize_dosen(d) for d in dosens]}, status=status.HTTP_200_OK)
+# # ===================== DOSEN =====================
+# # Public READ
+# @api_view(["GET"])
+# @permission_classes([AllowAny])
+# def list_dosen(request):
+#     dosens = Dosen.objects.all().order_by("-created_at")
+#     return Response({"dosens": [serialize_dosen(d) for d in dosens]}, status=status.HTTP_200_OK)
 
 
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def detail_dosen(request, id: int):
-    d = get_object_or_404(Dosen, id=id)
-    return Response({"dosen": serialize_dosen(d)}, status=status.HTTP_200_OK)
+# @api_view(["GET"])
+# @permission_classes([AllowAny])
+# def detail_dosen(request, id: int):
+#     d = get_object_or_404(Dosen, id=id)
+#     return Response({"dosen": serialize_dosen(d)}, status=status.HTTP_200_OK)
 
 
-# Admin WRITE (is_staff)
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])
-@parser_classes([MultiPartParser, FormParser])
-def create_dosen(request):
-    if not require_admin(request.user):
-        return Response({"error": "Admin only"}, status=status.HTTP_403_FORBIDDEN)
+# # Admin WRITE (is_staff)
+# @api_view(["POST"])
+# @permission_classes([IsAuthenticated])
+# @parser_classes([MultiPartParser, FormParser])
+# def create_dosen(request):
+#     if not require_admin(request.user):
+#         return Response({"error": "Admin only"}, status=status.HTTP_403_FORBIDDEN)
 
-    try:
-        dosen = Dosen.objects.create(
-            nama_dosen=request.data.get("nama_dosen"),
-            nidn=request.data.get("nidn"),
-            fakultas=request.data.get("fakultas"),
-            program_studi=request.data.get("program_studi"),
-            penelitian=request.data.get("penelitian"),
-            foto_dosen=request.FILES.get("foto_dosen"),
-        )
-        return Response({"message": "Dosen berhasil ditambahkan", "dosen": serialize_dosen(dosen)}, status=status.HTTP_201_CREATED)
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+#     try:
+#         dosen = Dosen.objects.create(
+#             nama_dosen=request.data.get("nama_dosen"),
+#             nidn=request.data.get("nidn"),
+#             fakultas=request.data.get("fakultas"),
+#             program_studi=request.data.get("program_studi"),
+#             penelitian=request.data.get("penelitian"),
+#             foto_dosen=request.FILES.get("foto_dosen"),
+#         )
+#         return Response({"message": "Dosen berhasil ditambahkan", "dosen": serialize_dosen(dosen)}, status=status.HTTP_201_CREATED)
+#     except Exception as e:
+#         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["POST"])  # POST karena ada upload file
-@permission_classes([IsAuthenticated])
-@parser_classes([MultiPartParser, FormParser])
-def update_dosen(request, id):
-    if not require_admin(request.user):
-        return Response({"error": "Admin only"}, status=status.HTTP_403_FORBIDDEN)
+# @api_view(["POST"])  # POST karena ada upload file
+# @permission_classes([IsAuthenticated])
+# @parser_classes([MultiPartParser, FormParser])
+# def update_dosen(request, id):
+#     if not require_admin(request.user):
+#         return Response({"error": "Admin only"}, status=status.HTTP_403_FORBIDDEN)
 
-    dosen = get_object_or_404(Dosen, id=id)
+#     dosen = get_object_or_404(Dosen, id=id)
 
-    dosen.nama_dosen = request.data.get("nama_dosen", dosen.nama_dosen)
-    dosen.nidn = request.data.get("nidn", dosen.nidn)
-    dosen.fakultas = request.data.get("fakultas", dosen.fakultas)
-    dosen.program_studi = request.data.get("program_studi", dosen.program_studi)
+#     dosen.nama_dosen = request.data.get("nama_dosen", dosen.nama_dosen)
+#     dosen.nidn = request.data.get("nidn", dosen.nidn)
+#     dosen.fakultas = request.data.get("fakultas", dosen.fakultas)
+#     dosen.program_studi = request.data.get("program_studi", dosen.program_studi)
 
-    if "penelitian" in request.data:
-        dosen.penelitian = request.data.get("penelitian")
+#     if "penelitian" in request.data:
+#         dosen.penelitian = request.data.get("penelitian")
 
-    foto = request.FILES.get("foto_dosen")
-    if foto:
-        dosen.foto_dosen = foto
+#     foto = request.FILES.get("foto_dosen")
+#     if foto:
+#         dosen.foto_dosen = foto
 
-    dosen.save()
-    return Response({"message": "Data dosen berhasil diupdate", "dosen": serialize_dosen(dosen)}, status=status.HTTP_200_OK)
+#     dosen.save()
+#     return Response({"message": "Data dosen berhasil diupdate", "dosen": serialize_dosen(dosen)}, status=status.HTTP_200_OK)
 
-@api_view(["DELETE"])
-@permission_classes([IsAuthenticated])
-def delete_dosen(request, id):
-    if not require_admin(request.user):
-        return Response({"error": "Admin only"}, status=status.HTTP_403_FORBIDDEN)
+# @api_view(["DELETE"])
+# @permission_classes([IsAuthenticated])
+# def delete_dosen(request, id):
+#     if not require_admin(request.user):
+#         return Response({"error": "Admin only"}, status=status.HTTP_403_FORBIDDEN)
 
-    dosen = get_object_or_404(Dosen, id=id)
-    dosen.delete()
-    return Response({"message": "Dosen berhasil dihapus"}, status=status.HTTP_200_OK)
+#     dosen = get_object_or_404(Dosen, id=id)
+#     dosen.delete()
+#     return Response({"message": "Dosen berhasil dihapus"}, status=status.HTTP_200_OK)

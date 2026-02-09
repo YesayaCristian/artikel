@@ -18,19 +18,20 @@ export default function CreateProfessorPage() {
         onCancel={() => nav("/admin/professors")}
         onSubmit={async (values: ProfessorFormValues) => {
           try {
-            await createAdminProfessor({
-              nama_dosen: values.nama_dosen,
-              nidn: values.nidn,
-              fakultas: values.fakultas,
-              program_studi: values.program_studi,
-              penelitian: values.penelitian,
-              foto: values.fotoFile ? [values.fotoFile] : undefined,
-            });
+            await createAdminProfessor(values);
 
-            toast({ type: "success", title: "Created", message: "Data dosen berhasil ditambahkan." });
+            toast({
+              type: "success",
+              title: "Created",
+              message: "Data dosen berhasil ditambahkan.",
+            });
             nav("/admin/professors");
           } catch (e: any) {
-            toast({ type: "error", title: "Failed", message: e?.message ?? "Gagal menambahkan dosen." });
+            toast({
+              type: "error",
+              title: "Failed",
+              message: e?.message ?? "Gagal menambahkan dosen.",
+            });
           }
         }}
       />

@@ -27,7 +27,7 @@ def list_mk(request):
 @permission_classes([AllowAny])
 def detail_mk(request, id):
     try:
-        mk = MataKuliah.objects.select_related("prodi").get(id_mk=id)
+        mk = MataKuliah.objects.select_related("prodi").get(id=id)
     except MataKuliah.DoesNotExist:
         return Response(
             {"error": "Mata kuliah tidak ditemukan"},
@@ -41,7 +41,7 @@ def detail_mk(request, id):
 @permission_classes([IsAuthenticated])
 def update_mk(request, id):
     try:
-        mk = MataKuliah.objects.get(id_mk=id)
+        mk = MataKuliah.objects.get(id=id)
     except MataKuliah.DoesNotExist:
         return Response(
             {"error": "Mata kuliah tidak ditemukan"},
@@ -59,7 +59,7 @@ def update_mk(request, id):
 @permission_classes([IsAuthenticated])
 def delete_mk(request, id):
     try:
-        mk = MataKuliah.objects.get(id_mk=id)
+        mk = MataKuliah.objects.get(id=id)
     except MataKuliah.DoesNotExist:
         return Response(
             {"error": "Mata kuliah tidak ditemukan"},

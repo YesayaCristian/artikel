@@ -28,10 +28,27 @@ export default function EditProfessorPage() {
           id: p.id,
           nama_dosen: p.nama_dosen,
           nidn: p.nidn,
+          email: p.email,
           fakultas: p.fakultas,
           program_studi: p.program_studi,
           penelitian: p.penelitian,
+          sinta_id: p.sinta_id,
+          researcher_id: p.researcher_id,
+          scopus_author_id: p.scopus_author_id,
+          orchid_id: p.orchid_id,
+          webpage: p.webpage,
+          pendidikan_s1: p.pendidikan_s1,
+          pendidikan_s2: p.pendidikan_s2,
+          pendidikan_s3: p.pendidikan_s3,
+          pekerjaan: p.pekerjaan,
+          research_interest: p.research_interest,
+          mata_kuliah_diampu: p.mata_kuliah_diampu,
+          publikasi: p.publikasi,
+          project: p.project,
+          pengabdian_masyarakat: p.pengabdian_masyarakat,
+          award: p.award,
           fotoUrl: p.foto_dosen ? resolveMediaUrl(p.foto_dosen) : "",
+
         });
       } catch {
         setInitial(null);
@@ -81,10 +98,26 @@ export default function EditProfessorPage() {
             await updateAdminProfessor(professorId, {
               nama_dosen: values.nama_dosen,
               nidn: values.nidn,
+              email: values.email ?? "",
               fakultas: values.fakultas,
               program_studi: values.program_studi,
               penelitian: values.penelitian,
-              foto: values.fotoFile ? [values.fotoFile] : undefined, // hanya kirim file baru
+              sinta_id: values.sinta_id ?? "",
+              researcher_id: values.researcher_id ?? "",
+              scopus_author_id: values.scopus_author_id ?? "",
+              orchid_id: values.orchid_id ?? "",
+              webpage: values.webpage ?? "",
+              pendidikan_s1: values.pendidikan_s1 ?? "",
+              pendidikan_s2: values.pendidikan_s2 ?? "",
+              pendidikan_s3: values.pendidikan_s3 ?? "",
+              pekerjaan: values.pekerjaan ?? "",
+              research_interest: values.research_interest ?? "",
+              mata_kuliah_diampu: values.mata_kuliah_diampu ?? "",
+              publikasi: values.publikasi ?? "",
+              project: values.project ?? "",
+              pengabdian_masyarakat: values.pengabdian_masyarakat ?? "",
+              award: values.award ?? "",
+              foto: values.fotoFile ? [values.fotoFile] : undefined,
             });
 
             toast({ type: "success", title: "Updated", message: "Data dosen berhasil diupdate." });

@@ -1,4 +1,6 @@
 from django.db import models
+
+# Create your models here.
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 
@@ -66,17 +68,3 @@ class ArticleImage(models.Model):
         on_delete=models.CASCADE
     )
     image = models.ImageField(upload_to="artikel/")
-
-class Dosen(models.Model):
-    nama_dosen = models.CharField(max_length=150)
-    nidn = models.CharField(max_length=20)
-    fakultas = models.CharField(max_length=100)
-    program_studi = models.CharField(max_length=100)
-    penelitian = models.TextField(max_length=255)
-    foto_dosen = models.ImageField(upload_to='dosen/')
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.nama_dosen
-

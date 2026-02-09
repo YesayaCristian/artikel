@@ -34,7 +34,7 @@ export default function AdminCoursesPage() {
 
     try {
       await deleteAdminCourse(id);
-      setItems((prev) => prev.filter((x) => x.id_mk !== id));
+      setItems((prev) => prev.filter((x) => x.id !== id));
     } catch (e: any) {
       alert(e?.message ?? "Gagal hapus");
     }
@@ -80,18 +80,28 @@ export default function AdminCoursesPage() {
                 <th className="text-left p-3">Jenis</th>
                 <th className="text-left p-3">Program Studi</th>
                 <th className="text-left p-3">Deskripsi</th>
+                <th className="text-left p-3">Bahan Kajian</th>
+                <th className="text-left p-3">CPPS</th>
+                <th className="text-left p-3">CPM</th>
+                <th className="text-left p-3">Daftar Rujukan</th>
+                <th className="text-left p-3">Instrumen Penilaian</th>
                 <th className="text-right p-3">Action</th>
               </tr>
             </thead>
             <tbody>
               {items.map((m) => (
-                <tr key={m.id_mk} className="border-t">
+                <tr key={m.id} className="border-t">
                   <td className="p-3 font-semibold text-black">
                     {m.kode_mk}
                   </td>
                   <td className="p-3 text-black/70">{m.nama_mk}</td>
                   <td className="p-3 text-black/70">{m.sks}</td>
                   <td className="p-3 text-black/70">{m.semester}</td>
+                  <td className="p-3 text-black/70">{m.bahan_kajian}</td>
+                  <td className="p-3 text-black/70">{m.cpps}</td>
+                  <td className="p-3 text-black/70">{m.cpm}</td>
+                  <td className="p-3 text-black/70">{m.daftar_rujukan}</td>
+                  <td className="p-3 text-black/70">{m.instrumen_penilaian}</td>
                   <td className="p-3 text-black/70 capitalize">
                     {m.jenis_mk}
                   </td>
@@ -101,13 +111,13 @@ export default function AdminCoursesPage() {
                   <td className="p-3 text-black/70">{m.deskripsi}</td>
                   <td className="p-3 text-right space-x-2">
                     <Link
-                      to={`/admin/course/edit/${m.id_mk}`}
+                      to={`/admin/course/edit/${m.id}`}
                       className="px-3 py-1 rounded-lg border text-blue-700 hover:bg-blue-50"
                     >
                       Edit
                     </Link>
                     <button
-                      onClick={() => onDelete(m.id_mk)}
+                      onClick={() => onDelete(m.id)}
                       className="px-3 py-1 rounded-lg border text-red-700 hover:bg-red-50"
                       type="button"
                     >

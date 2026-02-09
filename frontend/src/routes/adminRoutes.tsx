@@ -16,6 +16,7 @@ import TagsPage from "../pages/admin/tags";
 import AdminProfessorsPage from "../pages/admin/professors";
 import CreateProfessorPage from "../pages/admin/professors/create";
 import EditProfessorPage from "../pages/admin/professors/edit";
+import ProfessorDetailPage from "../pages/admin/professors/detail";
 import AdminFacultiesPage from "../pages/admin/faculties/";
 import CreateFacultyPage from "../pages/admin/faculties/create"
 import EditFacultyPage from "../pages/admin/faculties/edit";
@@ -60,6 +61,7 @@ const adminRoutes: RouteObject[] = [
           {path : "professors", element: <AdminProfessorsPage />},
           {path : "professors/create", element: <CreateProfessorPage />},
           {path : "professors/edit/:id", element: <EditProfessorPage />},
+          {path: "professors/detail/:id", element: <ProfessorDetailPage />,},
 
           {path : "faculties", element: <AdminFacultiesPage/>},
           {path : "faculties/create", element: <CreateFacultyPage/>},

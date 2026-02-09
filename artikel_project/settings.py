@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'fakultas',
     'program_studi',
     'mata_kuliah',
+    'dosen',
 ]
 
 MIDDLEWARE = [

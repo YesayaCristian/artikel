@@ -14,6 +14,11 @@ export type CourseFormValues = {
   jenis_mk: "wajib" | "pilihan" | "praktikum";
   id_prodi: number;
   deskripsi: string;
+  bahan_kajian?: string;
+  cpps?: string;
+  cpm?: string;
+  daftar_rujukan?: string;
+  instrumen_penilaian?: string;
 };
 
 export type CourseFormInitial = {
@@ -25,7 +30,11 @@ export type CourseFormInitial = {
   jenis_mk: "wajib" | "pilihan" | "praktikum";
   id_prodi: number;
   deskripsi: string;
-  updatedAt?: string;
+  bahan_kajian?: string;
+  cpps?: string;
+  cpm?: string;
+  daftar_rujukan?: string;
+  instrumen_penilaian?: string;
 };
 
 type Props = {
@@ -43,6 +52,11 @@ export default function CourseForm({ initial, onCancel, onSubmit }: Props) {
     useState<"wajib" | "pilihan" | "praktikum">(initial?.jenis_mk ?? "wajib");
   const [id_prodi, setIdProdi] = useState<number>(initial?.id_prodi ?? 0);
   const [deskripsi, setDeskripsi] = useState(initial?.deskripsi ?? "");
+  const [bahan_kajian, setBahanKajian] = useState(initial?.bahan_kajian ?? "");
+  const [cpps, setCpps] = useState(initial?.cpps ?? "");
+  const [cpm, setCpm] = useState(initial?.cpm ?? "");
+  const [daftar_rujukan, setDaftarRujukan] = useState(initial?.daftar_rujukan ?? "");
+  const [instrumen_penilaian, setInstrumenPenilaian] = useState(initial?.instrumen_penilaian ?? "");
 
   const [prodi, setProdi] = useState<Prodi[]>([]);
 
@@ -67,7 +81,13 @@ export default function CourseForm({ initial, onCancel, onSubmit }: Props) {
       jenis_mk,
       id_prodi,
       deskripsi,
+      bahan_kajian,
+      cpps,
+      cpm,
+      daftar_rujukan,
+      instrumen_penilaian,
     });
+
   }
 
 
@@ -140,10 +160,34 @@ export default function CourseForm({ initial, onCancel, onSubmit }: Props) {
             ))}
           </select>
         </div>
-
         <div className="sm:col-span-2">
           <label className={label}>Deskripsi</label>
           <textarea className={field + " h-32"} value={deskripsi} onChange={(e) => setDeskripsi(e.target.value)} />
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className={label}>Bahan Kajian</label>
+          <textarea className={field + " h-24"} value={bahan_kajian} onChange={(e) => setBahanKajian(e.target.value)} />
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className={label}>CPPS</label>
+          <textarea className={field + " h-24"} value={cpps} onChange={(e) => setCpps(e.target.value)} />
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className={label}>CPM</label>
+          <textarea className={field + " h-24"} value={cpm} onChange={(e) => setCpm(e.target.value)} />
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className={label}>Daftar Rujukan</label>
+          <textarea className={field + " h-24"} value={daftar_rujukan} onChange={(e) => setDaftarRujukan(e.target.value)} />
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className={label}>Instrumen Penilaian</label>
+          <textarea className={field + " h-24"} value={instrumen_penilaian} onChange={(e) => setInstrumenPenilaian(e.target.value)} />
         </div>
       </div>
     </form>

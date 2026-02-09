@@ -12,6 +12,7 @@ urlpatterns = [
 
     path('', include('article.urls')),
     path('', include('mata_kuliah.urls')),
+    path('', include('dosen.urls')),
 
 ]
 

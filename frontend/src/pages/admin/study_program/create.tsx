@@ -20,14 +20,7 @@ export default function CreateStudyProgramPage() {
         onCancel={() => nav("/admin/study_program")}
         onSubmit={async (values: StudyProgramFormValues) => {
           try {
-            await createAdminStudyProgram({
-              kode_prodi: values.kode_prodi,
-              nama_prodi: values.nama_prodi,
-              jenjang: values.jenjang,
-              akreditasi: values.akreditasi,
-              id_fakultas: values.id_fakultas,
-              kaprodi: values.kaprodi,
-            });
+            await createAdminStudyProgram(values);
 
             toast({
               type: "success",

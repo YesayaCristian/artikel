@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchFaculties } from "../../services/adminFaculty";
 
 export type Fakultas = {
@@ -82,11 +82,6 @@ export default function StudyProgramForm({
       kaprodi,
     });
   }
-
-  const updatedText = useMemo(() => {
-    if (!initial?.updatedAt) return "—";
-    return new Date(initial.updatedAt).toLocaleString();
-  }, [initial?.updatedAt]);
 
   return (
     <form onSubmit={submit} className="space-y-5">
@@ -191,13 +186,6 @@ export default function StudyProgramForm({
             value={kaprodi}
             onChange={(e) => setKaprodi(e.target.value)}
           />
-        </div>
-
-        <div className="sm:col-span-1">
-          <label className={label}>Updated</label>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700">
-            {initial ? updatedText : "—"}
-          </div>
         </div>
       </div>
     </form>
