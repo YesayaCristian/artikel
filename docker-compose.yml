@@ -1,0 +1,26 @@
+service:
+backend:
+  build:
+    context: .
+    dockerfile: Dockerfile
+  container_name: itb-backend
+  restart: always
+  ports:
+    - "8000:8000"
+  volumes:
+    - ./:/app
+  command: uvicorn app.main:app --host
+
+
+frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      - ENV=production
+    restart: always
+
