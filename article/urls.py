@@ -30,12 +30,4 @@ urlpatterns = [
     path("api/tags/<int:id>/update/", update_tag),
     path("api/tags/<int:id>/delete/", delete_tag),
 
-    # # dosen (PUBLIC)
-    # path("api/dosen/list/", list_dosen),
-    # path("api/dosen/<int:id>/", detail_dosen),
-
-    # # dosen (ADMIN)
-    # path("api/dosen/create/", create_dosen),
-    # path("api/dosen/<int:id>/update/", update_dosen),
-    # path("api/dosen/<int:id>/delete/", delete_dosen),
 ]
