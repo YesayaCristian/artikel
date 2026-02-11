@@ -1,5 +1,5 @@
 # Build Frontend
-FROM node:lts-alpine AS builder
+FROM node:lts-alpine AS frontend-builder
 
 WORKDIR /app/frontend
 
@@ -13,15 +13,14 @@ RUN npm ci
 COPY frontend/ ./
 
 
-
 # Build frontend for production
 RUN npm run build
 
-FROM nginx:alpine AS server
+FROM nginx:alpine AS frontend
 
 WORKDIR /usr/share/nginx/html
 
-COPY --from=builder /app/frontend/dist .
+COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
 
 ENV NODE_ENV production
 
@@ -31,19 +30,20 @@ CMD ["nginx", "-g", "daemon off;"]
 
 
 # Python Backend
-FROM python:3.11-slim AS backend-builder
+FROM python:3.11-slim AS backend
 
 WORKDIR /app
 
-COPY requirements.txt .
-
+ 
 # Install system dependencies + pip install
 RUN apt-get update && apt-get install -y \
     default-libmysqlclient-dev \
     build-essential \
     pkg-config \
-    && pip install -r requirements.txt
+    && rm -rf /var/lib/apt/lists/*
 
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 

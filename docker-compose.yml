@@ -1,26 +1,40 @@
-service:
-backend:
-  build:
-    context: .
-    dockerfile: Dockerfile
-  container_name: itb-backend
-  restart: always
-  ports:
-    - "8000:8000"
-  volumes:
-    - ./:/app
-  command: uvicorn app.main:app --host
+services:
+  db:
+    image: mysql:8.0
+    container_name: itb-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_artikel
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
 
-
-frontend:
+  backend:
     build:
       context: .
-      dockerfile: Dockerfile
-      target: server
-    restart: always
+      target: backend
+    container_name: itb-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=db_artikel
+      - DB_USER=root
+      - DB_PASSWORD=root
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: .
+      target: frontend
+    container_name: itb-frontend
     ports:
       - "80:80"
-    environment:
-      - ENV=production
-    restart: always
+    depends_on:
+      - backend
 
+volumes:
+  mysql_data:
