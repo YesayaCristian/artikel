@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchCategories, type ApiCategory } from "../../services/adminArticle";
 
 export type ArticleStatus = "draft" | "published";
@@ -125,10 +125,6 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
     });
   }
 
-  const updatedText = useMemo(() => {
-    if (!initial?.updatedAt) return "—";
-    return new Date(initial.updatedAt).toLocaleString();
-  }, [initial?.updatedAt]);
 
   return (
     <form onSubmit={submit} className="space-y-5">
@@ -296,12 +292,6 @@ export default function ArticleForm({ initial, onCancel, onSubmit }: Props) {
           </div>
         </div>
 
-        <div className="sm:col-span-1">
-          <label className={label}>Updated</label>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700">
-            {initial ? updatedText : "—"}
-          </div>
-        </div>
       </div>
     </form>
   );
