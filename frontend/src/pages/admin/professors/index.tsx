@@ -67,6 +67,7 @@ export default function AdminProfessorsPage() {
           <table className="w-full text-sm">
             <thead className="bg-blue-50 text-black">
               <tr>
+                <th className="p-3 text-left">Foto</th>
                 <th className="p-3 text-left">Nama Dosen</th>
                 <th className="p-3 text-left">NIDN</th>
                 <th className="p-3 text-left">Email</th>
@@ -74,12 +75,28 @@ export default function AdminProfessorsPage() {
                 <th className="p-3 text-left">Program Studi</th>
                 <th className="p-3 text-left">Penelitian</th>
                 <th className="p-3 text-left">Webpage</th>
-                <th className="p-3 text-right" >Action</th>
+                <th className="p-3 text-right">Action</th>
               </tr>
             </thead>
-            <tbody>
+           <tbody>
               {items.map((d) => (
                 <tr key={d.id} className="border-t">
+                  
+                  {/* 🔥 FOTO DOSEN */}
+                  <td className="p-3">
+                    {d.foto_dosen ? (
+                      <img
+                        src={`${import.meta.env.VITE_API_BASE_URL}${d.foto_dosen}`}
+                        alt={d.nama_dosen}
+                        className="w-14 h-14 object-cover rounded-lg border"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 flex items-center justify-center bg-gray-100 rounded-lg text-xs text-gray-400 border">
+                        No Photo
+                      </div>
+                    )}
+                  </td>
+
                   <td className="p-3">{d.nama_dosen}</td>
                   <td className="p-3">{d.nidn}</td>
                   <td className="p-3">{d.email}</td>
@@ -87,6 +104,7 @@ export default function AdminProfessorsPage() {
                   <td className="p-3">{d.program_studi}</td>
                   <td className="p-3">{d.penelitian}</td>
                   <td className="p-3">{d.webpage}</td>
+
                   <td className="p-3 text-right space-x-2">
                     <Link
                       to={`/admin/professors/detail/${d.id}`}
@@ -101,6 +119,7 @@ export default function AdminProfessorsPage() {
                     >
                       Edit
                     </Link>
+
                     <button
                       onClick={() => onDelete(d.id)}
                       className="px-3 py-1 rounded-lg border text-red-700 hover:bg-red-50"
