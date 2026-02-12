@@ -97,14 +97,7 @@ export default function CourseForm({ initial, onCancel, onSubmit }: Props) {
         <h2 className="text-lg font-semibold">
           {initial ? "Edit Mata Kuliah" : "Create Mata Kuliah"}
         </h2>
-        <div className="flex gap-2">
-          <button type="button" onClick={onCancel} className="border px-4 py-2 rounded-xl">
-            Cancel
-          </button>
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-xl">
-            Save
-          </button>
-        </div>
+        
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -190,6 +183,14 @@ export default function CourseForm({ initial, onCancel, onSubmit }: Props) {
           <textarea className={field + " h-24"} value={instrumen_penilaian} onChange={(e) => setInstrumenPenilaian(e.target.value)} />
         </div>
       </div>
+      <div className="flex gap-2">
+          <button type="button" onClick={onCancel} className="border px-4 py-2 rounded-xl">
+            Cancel
+          </button>
+          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-xl">
+            Save
+          </button>
+        </div>
     </form>
   );
 }
