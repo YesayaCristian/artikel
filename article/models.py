@@ -59,6 +59,29 @@ class Article(models.Model):
 
     def __str__(self):
         return self.judul
+    
+    def get_related(self, limit=5):
+        """
+        Ambil artikel terkait berdasarkan category atau tags.
+        """
+        # Mulai dengan query kosong
+        related_qs = Article.objects.none()
+
+        # Filter berdasarkan kategori
+        if self.category:
+            related_qs = Article.objects.filter(category=self.category)
+
+        # Tambahkan filter berdasarkan tags
+        if self.tags.exists():
+            related_qs = related_qs | Article.objects.filter(tags__in=self.tags.all())
+
+        # Exclude artikel ini sendiri
+        related_qs = related_qs.exclude(id=self.id)
+
+        # Hilangkan duplikat, urutkan terbaru, batasi jumlah
+        related_qs = related_qs.distinct().order_by('-created_at')[:limit]
+
+        return related_qs
 
 
 class ArticleImage(models.Model):

@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     # articles
-    list_article, create_article, detail_article, update_article, delete_article,
+    list_article, create_article, detail_article, update_article, delete_article, related_articles, list_article_admin,
     # categories
     list_categories, create_category, update_category, delete_category,
     # tags
@@ -17,6 +17,8 @@ urlpatterns = [
     path("api/articles/<int:id>/", detail_article),
     path("api/articles/<int:id>/update/", update_article),
     path("api/articles/<int:id>/delete/", delete_article),
+    path("api/articles/<int:id>/related/", related_articles),
+    path("api/admin/articles/", list_article_admin),
 
     # categories
     path("api/categories/", list_categories),

@@ -9,10 +9,11 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from .models import Dosen
 
-# Create your views here.
+from rest_framework.pagination import PageNumberPagination
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
-def list_dosen(request):
+def list_dosen_admin(request):
     dosens = Dosen.objects.all().order_by("-id")
 
     data = [{
@@ -24,23 +25,15 @@ def list_dosen(request):
         "program_studi": d.program_studi,
         "penelitian": d.penelitian,
         "foto_dosen": d.foto_dosen.url if d.foto_dosen else None,
-
-        # ID akademik
         "sinta_id": d.sinta_id,
         "researcher_id": d.researcher_id,
         "scopus_author_id": d.scopus_author_id,
         "orchid_id": d.orchid_id,
         "webpage": d.webpage,
-
-        # pendidikan
         "pendidikan_s1": d.pendidikan_s1,
         "pendidikan_s2": d.pendidikan_s2,
         "pendidikan_s3": d.pendidikan_s3,
-
-        # akademik
         "pekerjaan": d.pekerjaan,
-
-        # text area
         "research_interest": d.research_interest,
         "mata_kuliah_diampu": d.mata_kuliah_diampu,
         "publikasi": d.publikasi,
@@ -49,7 +42,71 @@ def list_dosen(request):
         "award": d.award,
     } for d in dosens]
 
-    return Response({"dosens": data}, status=status.HTTP_200_OK)
+    return Response({"dosens": data})
+
+class DosenPagination(PageNumberPagination):
+    page_size = 12                
+    page_size_query_param = 'page_size'
+    max_page_size = 20
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def list_dosen(request):
+
+    dosens = Dosen.objects.all().order_by("-id")
+
+    # Ambil query param
+    q = request.GET.get("q")
+    fakultas = request.GET.get("fakultas")
+
+    # Filter search
+    if q:
+        dosens = dosens.filter(nama_dosen__icontains=q)
+
+    # Filter fakultas
+    if fakultas:
+        dosens = dosens.filter(fakultas__iexact=fakultas.strip())
+
+    paginator = DosenPagination()
+    result_page = paginator.paginate_queryset(dosens, request)
+
+    data = [{
+        "id": d.id,
+        "nama_dosen": d.nama_dosen,
+        "nidn": d.nidn,
+        "email": d.email,
+        "fakultas": d.fakultas,
+        "program_studi": d.program_studi,
+        "penelitian": d.penelitian,
+        "foto_dosen": d.foto_dosen.url if d.foto_dosen else None,
+        "sinta_id": d.sinta_id,
+        "researcher_id": d.researcher_id,
+        "scopus_author_id": d.scopus_author_id,
+        "orchid_id": d.orchid_id,
+        "webpage": d.webpage,
+        "pendidikan_s1": d.pendidikan_s1,
+        "pendidikan_s2": d.pendidikan_s2,
+        "pendidikan_s3": d.pendidikan_s3,
+        "pekerjaan": d.pekerjaan,
+        "research_interest": d.research_interest,
+        "mata_kuliah_diampu": d.mata_kuliah_diampu,
+        "publikasi": d.publikasi,
+        "project": d.project,
+        "pengabdian_masyarakat": d.pengabdian_masyarakat,
+        "award": d.award,
+    } for d in result_page]
+
+    return paginator.get_paginated_response(data)
+
+
+@api_view(["GET"])
+def fakultas_list(request):
+    fakultas = (
+        Dosen.objects
+        .values_list("fakultas", flat=True)
+        .distinct()
+    )
+    return Response(fakultas)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])

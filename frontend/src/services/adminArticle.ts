@@ -15,7 +15,7 @@ export type ApiArticle = {
 };
 
 export async function fetchAdminArticles() {
-  return http<{ articles: ApiArticle[] }>("/api/articles/");
+  return http<{ articles: ApiArticle[] }>("/api/admin/articles/");
 }
 
 export async function getAdminArticle(id: number): Promise<ApiArticle> {

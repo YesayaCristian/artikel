@@ -94,21 +94,7 @@ export default function StudyProgramForm({
           </h2>
         </div>
 
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-2xl border bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="rounded-2xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-soft hover:bg-primary-700"
-          >
-            Save
-          </button>
-        </div>
+       
       </div>
 
       {/* FORM */}
@@ -188,6 +174,21 @@ export default function StudyProgramForm({
           />
         </div>
       </div>
+       <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-2xl border bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="rounded-2xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-soft hover:bg-primary-700"
+          >
+            Save
+          </button>
+        </div>
     </form>
   );
 }

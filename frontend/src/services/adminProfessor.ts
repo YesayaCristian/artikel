@@ -40,7 +40,7 @@ export type ApiProfessor = {
 };
 
 export async function fetchProfessors(): Promise<{ dosens: ApiProfessor[] }> {
-  return http<{ dosens: ApiProfessor[] }>("/api/dosen/list/");
+  return http<{ dosens: ApiProfessor[] }>("/api/admin/dosen/");
 }
 
 export async function getAdminProfessor(id: number): Promise<ApiProfessor> {

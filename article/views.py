@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 
 from .models import Article, ArticleImage, Category, Tag
 
@@ -275,10 +276,30 @@ def create_article(request):
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
-def list_article(request):
+def list_article_admin(request):
     articles = Article.objects.all().order_by("-created_at")
     data = [serialize_article(a) for a in articles]
     return Response({"articles": data}, status=status.HTTP_200_OK)
+
+class ArticlePagination(PageNumberPagination):
+    page_size = 6                
+    page_size_query_param = 'page_size'
+    max_page_size = 20
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def list_article(request):
+    articles = Article.objects.select_related("category").order_by("-created_at")
+    q = request.GET.get("q")
+    category_id = request.GET.get("category_id")
+    if q:
+        articles = articles.filter(judul__icontains=q)
+    if category_id and category_id.isdigit():
+        articles = articles.filter(category_id=int(category_id))
+    paginator = ArticlePagination()
+    result_page = paginator.paginate_queryset(articles, request)
+    data = [serialize_article(a) for a in result_page]
+    return paginator.get_paginated_response(data)
 
 
 @api_view(["GET"])
@@ -342,6 +363,14 @@ def delete_article(request, id):
 
     article.delete()
     return Response({"message": "Artikel berhasil dihapus"}, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def related_articles(request, id: int):
+    article = get_object_or_404(Article, id=id)
+    related_qs = article.get_related(limit=5)
+    data = [serialize_article(a) for a in related_qs]
+    return Response({"related_articles": data}, status=status.HTTP_200_OK)
 
 
 # # ===================== DOSEN =====================
