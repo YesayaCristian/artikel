@@ -2,9 +2,10 @@ type Props = {
   pageTitle: string;
   onOpenSidebar: () => void;
   onLogout?: () => void;
+  onSearch?: (value: string) => void;
 };
 
-export default function AdminNavbar({ pageTitle, onOpenSidebar, onLogout }: Props) {
+export default function AdminNavbar({ pageTitle, onOpenSidebar, onLogout, onSearch }: Props) {
   return (
     <header className="sticky top-0 z-40 border-b bg-white/80 backdrop-blur">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -36,16 +37,10 @@ export default function AdminNavbar({ pageTitle, onOpenSidebar, onLogout }: Prop
               <span className="text-slate-400">⌕</span>
               <input
                 className="w-56 bg-transparent text-sm outline-none placeholder:text-slate-400"
-                placeholder="Search (coming soon)"
+                placeholder="Search"
+                onChange={(e) => onSearch?.(e.target.value)}
               />
             </div>
-
-            <button
-              onClick={onLogout}
-              className="rounded-2xl border bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-            >
-              Logout
-            </button>
           </div>
         </div>
       </div>

@@ -29,10 +29,8 @@ export default function AdminLayout() {
       {/* Sidebar desktop */}
       <AdminSidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
 
-      {/* Mobile Drawer */}
       <AdminMobileDrawer open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Konten utama */}
       <div className="flex-1 flex flex-col transition-all duration-300">
         <AdminNavbar
           pageTitle={pageTitle}
@@ -40,13 +38,12 @@ export default function AdminLayout() {
           onLogout={handleLogout}
         />
 
-        {/* Konten bergeser sesuai kondisi sidebar */}
         <main
           className={`flex-1 py-6 md:py-8 px-4 sm:px-6 transition-all duration-300 ${
             sidebarOpen ? "md:ml-64" : "md:ml-0"
           }`}
         >
-          <div className="max-w-7xl mx-auto rounded-3xl border bg-white p-4 sm:p-6 shadow-soft">
+          <div className={`max-w-7xl mx-auto p-4 sm:p-6 ${pathname.startsWith("/admin/course/create") ? "bg-transparent border-none shadow-none rounded-none" : "bg-white border rounded-3xl shadow-soft"}`}>
             <Outlet />
           </div>
 

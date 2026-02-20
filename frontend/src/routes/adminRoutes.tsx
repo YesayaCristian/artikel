@@ -26,13 +26,18 @@ import EditStudyProgramPage from "../pages/admin/study_program/edit";
 import AdminCoursesPage from "../pages/admin/course";
 import CreateCoursePage from "../pages/admin/course/create";
 import EditCoursePage from "../pages/admin/course/edit";
-
+import ArticleDetailPage from "../pages/admin/articles/detail";
 
 
 const adminRoutes: RouteObject[] = [
+  
+  {
+    path: "/",
+    element: <Navigate to="/admin/login" replace />, // root diarahkan ke login
+  },
   {
     path: "/admin",
-    element: <Outlet />, 
+    element: <Outlet />,
     children: [
       {
         path: "login",
@@ -57,6 +62,7 @@ const adminRoutes: RouteObject[] = [
           { path: "articles", element: <AdminArticlesPage /> },
           { path: "articles/create", element: <CreateArticlePage /> },
           { path: "articles/edit/:id", element: <EditArticlePage /> },
+          { path: "articles/:id", element: <ArticleDetailPage /> },
 
           {path : "professors", element: <AdminProfessorsPage />},
           {path : "professors/create", element: <CreateProfessorPage />},

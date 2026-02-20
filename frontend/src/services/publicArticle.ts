@@ -15,7 +15,7 @@ export type ApiArticle = {
 };
 
 export async function fetchPublicArticles(): Promise<ApiArticle[]> {
-  const res = await fetch(`${BASE}/api/article/`, {
+  const res = await fetch(`${BASE}/api/admin/articles/`, {
     headers: { Accept: "application/json" },
   });
   if (!res.ok) throw new Error(`Fetch list gagal: ${res.status} ${res.statusText}`);

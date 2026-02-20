@@ -1,196 +1,141 @@
-import { useEffect, useState } from "react";
-import { fetchStudyPrograms } from "../../services/adminStudyProgram";
+import { useState,type FormEvent } from "react"
+import WordEditor from "../../components/WordEditor"
 
-export type Prodi = {
-  id: number;
-  nama_prodi: string;
-};
+export default function CourseForm({onCancel,onSubmit}:{onCancel:()=>void;onSubmit:(data:any)=>void}) {
+  const [program,setProgram]=useState("")
+  const [opsiKeilmuan,setOpsiKeilmuan]=useState("")
+  const [spesialisasi,setSpesialisasi]=useState("")
+  const [kodeMK,setKodeMK]=useState("")
+  const [namaMK,setNamaMK]=useState("")
+  const [sks,setSks]=useState(3)
+  const [deskripsi,setDeskripsi]=useState("")
+  const [cpps,setCpps]=useState("")
+  const [cpmk,setCpmk]=useState("")
+  const [rps,setRps]=useState("")
+  const [etika,setEtika]=useState("")
+  const [methods,setMethods]=useState([{metode:"",implementasi:"",cpmk:"",cpl:""}])
+  const [assessments,setAssessments]=useState([{komponen:"",rubrik:"",bobot:0,cpl:""}])
 
-export type CourseFormValues = {
-  kode_mk: string;
-  nama_mk: string;
-  sks: number;
-  semester: number;
-  jenis_mk: "wajib" | "pilihan" | "praktikum";
-  id_prodi: number;
-  deskripsi: string;
-  bahan_kajian?: string;
-  cpps?: string;
-  cpm?: string;
-  daftar_rujukan?: string;
-  instrumen_penilaian?: string;
-};
+  const field="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+  const label="block text-sm font-semibold text-slate-700 mb-1"
 
-export type CourseFormInitial = {
-  id_mk?: string;
-  kode_mk: string;
-  nama_mk: string;
-  sks: number;
-  semester: number;
-  jenis_mk: "wajib" | "pilihan" | "praktikum";
-  id_prodi: number;
-  deskripsi: string;
-  bahan_kajian?: string;
-  cpps?: string;
-  cpm?: string;
-  daftar_rujukan?: string;
-  instrumen_penilaian?: string;
-};
+  function addMethod(){setMethods([...methods,{metode:"",implementasi:"",cpmk:"",cpl:""}])}
+  function removeMethod(i:number){setMethods(methods.filter((_,idx)=>idx!==i))}
+  function addAssessment(){
+    if(assessments.length >= 10) return
+    setAssessments([...assessments,{komponen:"",rubrik:"",bobot:0,cpl:""}])
+  }
+  function removeAssessment(i:number){setAssessments(assessments.filter((_,idx)=>idx!==i))}
 
-type Props = {
-  initial?: CourseFormInitial | null;
-  onCancel: () => void;
-  onSubmit: (values: CourseFormValues) => void;
-};
-
-export default function CourseForm({ initial, onCancel, onSubmit }: Props) {
-  const [kode_mk, setKodeMk] = useState(initial?.kode_mk ?? "");
-  const [nama_mk, setNamaMk] = useState(initial?.nama_mk ?? "");
-  const [sks, setSks] = useState<number>(initial?.sks ?? 3);
-  const [semester, setSemester] = useState<number>(initial?.semester ?? 1);
-  const [jenis_mk, setJenisMk] =
-    useState<"wajib" | "pilihan" | "praktikum">(initial?.jenis_mk ?? "wajib");
-  const [id_prodi, setIdProdi] = useState<number>(initial?.id_prodi ?? 0);
-  const [deskripsi, setDeskripsi] = useState(initial?.deskripsi ?? "");
-  const [bahan_kajian, setBahanKajian] = useState(initial?.bahan_kajian ?? "");
-  const [cpps, setCpps] = useState(initial?.cpps ?? "");
-  const [cpm, setCpm] = useState(initial?.cpm ?? "");
-  const [daftar_rujukan, setDaftarRujukan] = useState(initial?.daftar_rujukan ?? "");
-  const [instrumen_penilaian, setInstrumenPenilaian] = useState(initial?.instrumen_penilaian ?? "");
-
-  const [prodi, setProdi] = useState<Prodi[]>([]);
-
-  const field =
-    "w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm shadow-sm focus:ring-4 focus:ring-primary-100";
-  const label = "block text-sm font-semibold text-slate-700 mb-1";
-
-  useEffect(() => {
-    (async () => {
-      const res = await fetchStudyPrograms();
-      setProdi(res.program_studi ?? []);
-    })();
-  }, []);
-
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    onSubmit({
-      kode_mk,
-      nama_mk,
-      sks,
-      semester,
-      jenis_mk,
-      id_prodi,
-      deskripsi,
-      bahan_kajian,
-      cpps,
-      cpm,
-      daftar_rujukan,
-      instrumen_penilaian,
-    });
-
+  function submit(e:FormEvent<HTMLFormElement>){
+    e.preventDefault()
+    const totalBobot=assessments.reduce((sum,a)=>sum+Number(a.bobot),0)
+    if(totalBobot>100){alert("Total bobot asesmen tidak boleh melebihi 100%");return}
+    onSubmit({informasi_dasar:{program,opsiKeilmuan,spesialisasi,kodeMK,namaMK,sks},deskripsi,capaian_pembelajaran:{cpps,cpmk,rps,etika},learning_methods:methods,assessments})
   }
 
+  return(
+    <div className="space-y-10 bg-transparent shadow-none rounded-none">
+      <h2 className="text-xl font-bold">Create Mata Kuliah</h2>
+      <form onSubmit={submit} className="space-y-10">
+        <section className="bg-white rounded-xl shadow-xl p-6 space-y-4">
+          <h3 className="text-md font-semibold border-b pb-2">Informasi Dasar Mata Kuliah</h3>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div><label className={label}>Program</label><select className={field} value={program} onChange={e=>setProgram(e.target.value)}><option value="">— Pilih Program —</option><option value="S2">S2 Magister</option><option value="S3">S3 Doktoral</option></select></div>
+            {program==="S2"&&<div><label className={label}>Opsi Keilmuan</label><select className={field} value={opsiKeilmuan} onChange={e=>setOpsiKeilmuan(e.target.value)}><option value="">— Pilih Opsi —</option><option value="sains_atmosfer">Sains Atmosfer</option><option value="oseanografi">Oseanografi</option><option value="bencana">Interaksi Sistem Bumi</option></select></div>}
+            {program==="S3"&&<div><label className={label}>Opsi Keilmuan</label><select className={field} value={opsiKeilmuan} onChange={e=>setOpsiKeilmuan(e.target.value)}><option value="sains_kebumian">Sains Kebumian</option></select></div>}
+            {program==="S2"&&<div><label className={label}>Spesialisasi</label><select className={field} value={spesialisasi} onChange={e=>setSpesialisasi(e.target.value)}><option value="">— Pilih Spesialisasi —</option><option value="iklim">Perubahan Iklim & Transisi Energi</option><option value="bencana">Mitigasi Bencana Kebumian</option></select></div>}
+            <div><label className={label}>Kode MK</label><input className={field} value={kodeMK} maxLength={20} onChange={e=>setKodeMK(e.target.value)}/><p className="text-xs text-gray-400 text-right">Maksimal 20 karakter</p></div>
+            <div><label className={label}>Nama MK</label><input className={field} value={namaMK} maxLength={100} onChange={e=>setNamaMK(e.target.value)}/><p className="text-xs text-gray-400 text-right">Maksimal 100 karakter</p></div>
+            <div><label className={label}>SKS</label><input type="number" className={field} value={sks} onChange={e=>setSks(Number(e.target.value))}/></div>
+          </div>
+        </section>
 
-  return (
-    <form onSubmit={submit} className="space-y-5">
-      <div className="flex justify-between">
-        <h2 className="text-lg font-semibold">
-          {initial ? "Edit Mata Kuliah" : "Create Mata Kuliah"}
-        </h2>
-        
-      </div>
+        <section className="bg-white rounded-xl shadow-xl p-6 space-y-4">
+          <h3 className="text-md font-semibold border-b pb-2">Deskripsi Singkat</h3>
+          <WordEditor label="Deskripsi" value={deskripsi} onChange={setDeskripsi}/>
+          <p className="text-xs text-gray-400 text-right">Maksimal 200 karakter</p>
+        </section>
+        <section className="bg-white rounded-xl shadow-xl p-6 space-y-4">
+          <h3 className="text-md font-semibold border-b pb-2">Capaian Pembelajaran</h3>
+          <WordEditor label="CPPS" value={cpps} onChange={setCpps}/><p className="text-xs text-gray-400 text-right">Maksimal 500 karakter</p>
+          <WordEditor label="CPMK" value={cpmk} onChange={setCpmk}/><p className="text-xs text-gray-400 text-right">Maksimal 500 karakter</p>
+          <WordEditor label="Rencana Pembelajaran Mingguan" value={rps} onChange={setRps}/><p className="text-xs text-gray-400 text-right">Maksimal 500 karakter</p>
+          <WordEditor label="Etika Akademik" value={etika} onChange={setEtika}/><p className="text-xs text-gray-400 text-right">Maksimal 200 karakter</p>
+        </section>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className={label}>Kode MK</label>
-          <input className={field} value={kode_mk} onChange={(e) => setKodeMk(e.target.value)} />
-        </div>
+        <section className="bg-white rounded-xl shadow p-6 space-y-4">
+          <h3 className="text-md font-semibold border-b pb-2">Pemetaan Metode Pembelajaran</h3>
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-slate-100 text-left">
+                <th className="p-2">Metode</th>
+                <th className="p-2">Implementasi</th>
+                <th className="p-2">CPMK</th>
+                <th className="p-2">CPL</th>
+                <th className="p-2">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {methods.map((m,i)=>(
+                <tr key={i} className="border-t">
+                  <td className="p-2"><input className={field} value={m.metode} onChange={e=>{const arr=[...methods];arr[i].metode=e.target.value;setMethods(arr)}}/></td>
+                  <td className="p-2"><input className={field} value={m.implementasi} maxLength={200} onChange={e=>{const arr=[...methods];arr[i].implementasi=e.target.value;setMethods(arr)}}/></td>
+                  <td className="p-2"><input className={field} value={m.cpmk} onChange={e=>{const arr=[...methods];arr[i].cpmk=e.target.value;setMethods(arr)}}/></td>
+                  <td className="p-2"><input className={field} value={m.cpl} onChange={e=>{const arr=[...methods];arr[i].cpl=e.target.value;setMethods(arr)}}/></td>
+                  <td className="p-2"><button type="button" onClick={()=>removeMethod(i)} className="text-red-600">Hapus</button></td>
+                </tr>
+              ))}
+              
+            </tbody>
+              <p className="text-xs text-gray-400">Implementasi maksimal 200 karakter</p>
+          </table>
+          <button type="button" onClick={addMethod} disabled={methods.length >= 10} className={`px-3 py-1 rounded ${methods.length >= 10 ? "bg-gray-300 text-gray-600 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}>+ Tambah Metode</button>
+          {methods.length >= 10 && (
+            <span className="text-sm text-red-600">
+              Maksimal 10 metode sudah tercapai
+            </span>
+          )}
+        </section>
 
-        <div>
-          <label className={label}>Nama MK</label>
-          <input className={field} value={nama_mk} onChange={(e) => setNamaMk(e.target.value)} />
-        </div>
+       <section className="bg-white rounded-xl shadow p-6 space-y-4">
+          <h3 className="text-md font-semibold border-b pb-2">Strategi & Instrumen Asesmen</h3>
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-slate-100 text-left">
+                <th className="p-2">Komponen</th>
+                <th className="p-2">Rubrik</th>
+                <th className="p-2">Bobot %</th>
+                <th className="p-2">CPL</th>
+                <th className="p-2">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {assessments.map((a,i)=>(
+                <tr key={i} className="border-t">
+                  <td className="p-2"><input className={field} value={a.komponen} onChange={e=>{const arr=[...assessments];arr[i].komponen=e.target.value;setAssessments(arr)}}/></td>
+                  <td className="p-2"><input className={field} value={a.rubrik} onChange={e=>{const arr=[...assessments];arr[i].rubrik=e.target.value;setAssessments(arr)}}/></td>
+                  <td className="p-2"><input type="number" className={field} value={a.bobot} onChange={e=>{const arr=[...assessments];arr[i].bobot=Number(e.target.value);setAssessments(arr)}}/></td>
+                  <td className="p-2"><input className={field} value={a.cpl} onChange={e=>{const arr=[...assessments];arr[i].cpl=e.target.value;setAssessments(arr)}}/></td>
+                  <td className="p-2"><button type="button" onClick={()=>removeAssessment(i)} className="text-red-600">Hapus</button></td>
+                </tr>
+              ))}
+            </tbody>
+            <p className="text-xs text-gray-400">Total Bobot ≤ 100%</p>
+          </table>
+          <button type="button" onClick={addAssessment} disabled={assessments.length >= 100} className={`px-3 py-1 rounded ${assessments.length >= 10 ? "bg-gray-300 text-gray-600 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}>+ Tambah Asesmen</button>
+            {assessments.length >= 10 && (
+              <span className="text-sm text-red-600">
+                Maksimal 10 asesmen sudah tercapai
+              </span>
+            )}
+        </section>
 
-        <div>
-          <label className={label}>SKS</label>
-          <input
-            type="number"
-            min={1}
-            max={6}
-            className={field}
-            value={sks}
-            onChange={(e) => setSks(Number(e.target.value))}
-          />
+        <div className="flex gap-2">
+          <button type="button" onClick={onCancel} className="border px-4 py-2 rounded-xl">Cancel</button>
+          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-xl">Save</button>
         </div>
-
-        <div>
-          <label className={label}>Semester</label>
-          <input
-            type="number"
-            className={field}
-            value={semester}
-            onChange={(e) => setSemester(Number(e.target.value))}
-          />
-        </div>
-
-        <div>
-          <label className={label}>Jenis MK</label>
-          <select className={field} value={jenis_mk} onChange={(e) => setJenisMk(e.target.value as any)}>
-            <option value="wajib">Wajib</option>
-            <option value="pilihan">Pilihan</option>
-            <option value="praktikum">Praktikum</option>
-          </select>
-        </div>
-
-        <div>
-          <label className={label}>Program Studi</label>
-          <select className={field} value={id_prodi} onChange={(e) => setIdProdi(Number(e.target.value))}>
-            <option value={0}>— Pilih Prodi —</option>
-            {prodi.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nama_prodi}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="sm:col-span-2">
-          <label className={label}>Deskripsi</label>
-          <textarea className={field + " h-32"} value={deskripsi} onChange={(e) => setDeskripsi(e.target.value)} />
-        </div>
-
-        <div className="sm:col-span-2">
-          <label className={label}>Bahan Kajian</label>
-          <textarea className={field + " h-24"} value={bahan_kajian} onChange={(e) => setBahanKajian(e.target.value)} />
-        </div>
-
-        <div className="sm:col-span-2">
-          <label className={label}>CPPS</label>
-          <textarea className={field + " h-24"} value={cpps} onChange={(e) => setCpps(e.target.value)} />
-        </div>
-
-        <div className="sm:col-span-2">
-          <label className={label}>CPM</label>
-          <textarea className={field + " h-24"} value={cpm} onChange={(e) => setCpm(e.target.value)} />
-        </div>
-
-        <div className="sm:col-span-2">
-          <label className={label}>Daftar Rujukan</label>
-          <textarea className={field + " h-24"} value={daftar_rujukan} onChange={(e) => setDaftarRujukan(e.target.value)} />
-        </div>
-
-        <div className="sm:col-span-2">
-          <label className={label}>Instrumen Penilaian</label>
-          <textarea className={field + " h-24"} value={instrumen_penilaian} onChange={(e) => setInstrumenPenilaian(e.target.value)} />
-        </div>
-      </div>
-      <div className="flex gap-2">
-          <button type="button" onClick={onCancel} className="border px-4 py-2 rounded-xl">
-            Cancel
-          </button>
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-xl">
-            Save
-          </button>
-        </div>
-    </form>
-  );
+      </form>
+    </div>
+  )
 }

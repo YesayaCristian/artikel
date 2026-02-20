@@ -4,9 +4,10 @@ import AdminNavLinks from "../admin/AdminNavlinks";
 type Props = {
   open: boolean;
   onToggle: () => void;
+  onLogout: () => void;
 };
 
-export default function AdminSidebar({ open, onToggle }: Props) {
+export default function AdminSidebar({ open, onToggle, onLogout }: Props) {
   return (
     <aside
       className={`fixed top-0 left-0 h-screen transition-transform duration-300 z-50 ${
@@ -30,10 +31,12 @@ export default function AdminSidebar({ open, onToggle }: Props) {
 
         {/* Footer Tip */}
         <div className="mt-auto rounded-3xl bg-slate-50 p-3">
-          <div className="text-xs text-slate-500">Tip</div>
-          <div className="text-sm font-semibold text-slate-800">
-            Draft dulu, publish belakangan.
-          </div>
+            <button
+              onClick={ onLogout}
+              className="rounded-2xl border bg-red-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600"
+            >
+              Logout
+            </button>
         </div>
       </div>
 

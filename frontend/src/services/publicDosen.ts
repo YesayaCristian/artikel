@@ -12,7 +12,7 @@ export type Dosen = {
 };
 
 export async function fetchPublicDosens(): Promise<Dosen[]> {
-  const res = await fetch(`${BASE}/api/dosen/list/`, {
+  const res = await fetch(`${BASE}/api/admin/dosen/`, {
     headers: { Accept: "application/json" },
   });
 
