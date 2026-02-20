@@ -123,7 +123,7 @@ export default function CourseForm({onCancel,onSubmit}:{onCancel:()=>void;onSubm
             </tbody>
             <p className="text-xs text-gray-400">Total Bobot ≤ 100%</p>
           </table>
-          <button type="button" onClick={addAssessment} disabled={assessments.length >= 100} className={`px-3 py-1 rounded ${assessments.length >= 10 ? "bg-gray-300 text-gray-600 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}>+ Tambah Asesmen</button>
+          <button type="button" onClick={addAssessment} disabled={assessments.length >= 10} className={`px-3 py-1 rounded ${assessments.length >= 10 ? "bg-gray-300 text-gray-600 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}>+ Tambah Asesmen</button>
             {assessments.length >= 10 && (
               <span className="text-sm text-red-600">
                 Maksimal 10 asesmen sudah tercapai
